@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex min-h-screen items-center bg-[radial-gradient(circle_at_top,#f6fbf6_0%,#eef5ef_45%,#e8f0ea_100%)] px-6 py-16 text-slate-900">
@@ -15,6 +17,26 @@ export default function Home() {
           Track health. Understand behavior. Organize care. Get smarter next
           steps for the pets you love.
         </p>
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/sign-up"
+            className="inline-flex items-center justify-center rounded-full bg-emerald-900 px-6 py-3 text-sm font-semibold text-white transition hover:bg-emerald-800"
+          >
+            Create account
+          </Link>
+          <Link
+            href="/sign-in"
+            className="inline-flex items-center justify-center rounded-full border border-emerald-900/20 px-6 py-3 text-sm font-semibold text-emerald-950 transition hover:border-emerald-900/40"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/app"
+            className="inline-flex items-center justify-center rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-400"
+          >
+            Open app
+          </Link>
+        </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2">
           <div className="rounded-2xl border border-slate-200 bg-slate-50/80 px-5 py-4">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
