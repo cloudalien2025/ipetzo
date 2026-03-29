@@ -30,6 +30,12 @@ function getRuntimeDatabaseConfig(): {
     connectionUrl.searchParams.set("sslmode", "require");
   }
 
+  if (disableSslVerification) {
+    // pg-connection-string currently treats `sslmode=require` like verify-full
+    // unless libpq-compatible parsing is enabled explicitly.
+    connectionUrl.searchParams.set("uselibpqcompat", "true");
+  }
+
   return {
     connectionString: connectionUrl.toString(),
     // Temporary local exception: keep TLS enabled, but allow certificate
