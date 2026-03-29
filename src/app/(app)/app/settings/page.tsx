@@ -1,22 +1,10 @@
-import { EmptyStateCard } from "@/components/shared/empty-state-card";
-import { PageFrame } from "@/components/shared/page-frame";
+import { PlaceholderTabScreen } from "@/components/layout/app-shell-primitives";
 
 export default function SettingsShellPage() {
   return (
-    <PageFrame
-      eyebrow="Settings"
-      title="Shell settings placeholder"
-      description="This space can later hold account preferences and app-level controls. It stays intentionally shallow in this lane so the shell remains focused."
-    >
-      <EmptyStateCard
-        label="Placeholder"
-        title="No settings workflow yet"
-        description="Authentication is active and the shell is stable. Real account and profile controls can be added later without reshaping the protected layout."
-        action={{
-          href: "/app",
-          label: "Back to dashboard",
-        }}
-      />
-    </PageFrame>
+    <PlaceholderTabScreen
+      title="Settings"
+      description="Settings implementation is still intentionally shallow. The refreshed shell keeps this route intact without expanding account, notification, or preference logic."
+    />
   );
 }

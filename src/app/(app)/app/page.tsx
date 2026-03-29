@@ -1,89 +1,89 @@
-import Link from "next/link";
+import {
+  BowlIcon,
+  CapsuleIcon,
+  ConcernCard,
+  DropIcon,
+  FeedRow,
+  PetHeader,
+  QuickActionsPanel,
+  SectionHeader,
+  TaskCard,
+} from "@/components/layout/app-shell-primitives";
 
-import { EmptyStateCard } from "@/components/shared/empty-state-card";
-import { PageFrame } from "@/components/shared/page-frame";
-import { getCurrentAuthenticatedAppUser } from "@/server/services/auth/app-user";
+const dueNowItems = [
+  {
+    title: "Dinner Due",
+    detail: "6:00 PM",
+    icon: <BowlIcon />,
+  },
+  {
+    title: "Apoquel",
+    detail: "8:00 PM",
+    icon: <CapsuleIcon />,
+  },
+  {
+    title: "Give Ears Meds",
+    detail: "Tomorrow",
+    icon: <DropIcon />,
+  },
+] as const;
 
-export const dynamic = "force-dynamic";
+const villageFeedItems = [
+  {
+    actor: "Michael",
+    action: "fed Buddy and Izzy at 8:30 AM",
+  },
+  {
+    actor: "Sarah",
+    action: "gave Apoquel at 9:00 AM",
+  },
+  {
+    actor: "Jake",
+    action: "noted itching after walk",
+  },
+] as const;
 
-export default async function AppHomePage() {
-  const appUser = await getCurrentAuthenticatedAppUser();
-
+export default function AppHomePage() {
   return (
-    <PageFrame
-      eyebrow="Dashboard"
-      title="Your pet care home base"
-      description="You are signed in and inside the protected iPetzo app shell. Pets, records, and timeline flows can now plug into this frame without changing the auth boundary."
-    >
-      <section className="grid gap-4 lg:grid-cols-[1.3fr_0.9fr]">
-        <EmptyStateCard
-          label="Next step"
-          title="Add your first pet when the pet lane lands"
-          description="Each pet will become the center of gravity for records, routines, and care context. This shell keeps that next step obvious without jumping ahead into form work yet."
-          action={{
-            href: "/app/pets",
-            label: "View pets shell",
-          }}
-          secondaryAction={{
-            href: "/app/timeline",
-            label: "View timeline shell",
-          }}
-        />
+    <div className="space-y-5">
+      <PetHeader />
 
-        <section className="rounded-[2rem] border border-white/70 bg-white/88 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)] backdrop-blur sm:p-8">
-          <p className="text-[0.72rem] font-semibold tracking-[0.18em] text-slate-500 uppercase">
-            Account context
-          </p>
-          <dl className="mt-5 space-y-4 text-sm text-slate-600">
-            <div>
-              <dt className="font-semibold uppercase tracking-[0.14em] text-slate-500">
-                App user id
-              </dt>
-              <dd className="mt-2 break-all text-base text-slate-950">
-                {appUser?.id ?? "Not synced"}
-              </dd>
-            </div>
-            <div>
-              <dt className="font-semibold uppercase tracking-[0.14em] text-slate-500">
-                Email
-              </dt>
-              <dd className="mt-2 break-all text-base text-slate-950">
-                {appUser?.email ?? "Not available"}
-              </dd>
-            </div>
-          </dl>
-          <Link
-            href="/app/settings"
-            className="mt-6 inline-flex items-center text-sm font-semibold text-emerald-900 transition hover:text-emerald-700"
-          >
-            Open shell settings
-          </Link>
-        </section>
+      <section className="space-y-3">
+        <SectionHeader title="Due Now" />
+        <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
+          {dueNowItems.map((item) => (
+            <TaskCard
+              key={item.title}
+              icon={item.icon}
+              title={item.title}
+              detail={item.detail}
+            />
+          ))}
+        </div>
       </section>
 
-      <section className="grid gap-4 md:grid-cols-3">
-        <section className="rounded-[1.75rem] border border-white/70 bg-white/88 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
-          <p className="text-sm font-semibold text-slate-900">Pets</p>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            The pet area will become the source of record ownership and care
-            context.
-          </p>
-        </section>
-        <section className="rounded-[1.75rem] border border-white/70 bg-white/88 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
-          <p className="text-sm font-semibold text-slate-900">Timeline</p>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Logs and events will flow into a readable timeline once that lane is
-            built.
-          </p>
-        </section>
-        <section className="rounded-[1.75rem] border border-white/70 bg-white/88 p-6 shadow-[0_16px_50px_rgba(15,23,42,0.05)]">
-          <p className="text-sm font-semibold text-slate-900">Settings</p>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Account and shell preferences can grow here later without changing
-            the app frame.
-          </p>
-        </section>
+      <section className="space-y-3">
+        <SectionHeader title="Village Feed" />
+        <div className="space-y-2.5">
+          {villageFeedItems.map((item) => (
+            <FeedRow
+              key={`${item.actor}-${item.action}`}
+              actor={item.actor}
+              action={item.action}
+            />
+          ))}
+        </div>
       </section>
-    </PageFrame>
+
+      <section className="space-y-3">
+        <SectionHeader title="Active Concern" />
+        <ConcernCard title="Ear Infection Recovery Day 2" />
+      </section>
+
+      <section className="space-y-3">
+        <SectionHeader title="Quick Actions" />
+        <QuickActionsPanel />
+      </section>
+    </div>
   );
 }

@@ -1,26 +1,58 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f4ee;
+  --foreground: #16233d;
+  --bg-app: #f4f4ee;
+  --bg-surface: #ffffff;
+  --text-primary: #16233d;
+  --text-secondary: #64748b;
+  --border-subtle: #dde4ea;
+  --accent-monitoring: #f4b165;
+  --accent-warning: #e7b04d;
+  --action-blue: #7da6f7;
+  --action-green: #85c58f;
+  --action-red: #ef8d82;
+  --nav-active: #7c97d8;
+  --nav-inactive: #8a99af;
+  --surface-muted: #f8fafc;
+  --surface-panel: #f1f4f7;
+  --focus-ring: #93a8df;
+  --radius-shell: 2rem;
+  --radius-surface: 1.5rem;
+  --radius-card: 1.125rem;
+  --radius-pill: 999px;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-app-bg: var(--bg-app);
+  --color-surface: var(--bg-surface);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-border-subtle: var(--border-subtle);
+  --color-accent-monitoring: var(--accent-monitoring);
+  --color-accent-warning: var(--accent-warning);
+  --color-action-blue: var(--action-blue);
+  --color-action-green: var(--action-green);
+  --color-action-red: var(--action-red);
+  --color-nav-active: var(--nav-active);
+  --color-nav-inactive: var(--nav-inactive);
+  --color-surface-muted: var(--surface-muted);
+  --color-surface-panel: var(--surface-panel);
+  --color-focus-ring: var(--focus-ring);
   --font-sans: "Segoe UI", Helvetica, Arial, sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
 }

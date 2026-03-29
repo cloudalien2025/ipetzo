@@ -3,32 +3,45 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+import {
+  PatternsIcon,
+  ProtectIcon,
+  TimelineIcon,
+  TodayIcon,
+  VillageIcon,
+} from "@/components/layout/app-shell-primitives";
+
 type AppNavItem = {
   href: string;
   label: string;
-  shortLabel: string;
+  icon: (props: { className?: string }) => React.ReactNode;
 };
 
 const appNavItems: AppNavItem[] = [
   {
     href: "/app",
-    label: "Home",
-    shortLabel: "Home",
-  },
-  {
-    href: "/app/pets",
-    label: "Pets",
-    shortLabel: "Pets",
+    label: "Today",
+    icon: TodayIcon,
   },
   {
     href: "/app/timeline",
     label: "Timeline",
-    shortLabel: "Timeline",
+    icon: TimelineIcon,
   },
   {
-    href: "/app/settings",
-    label: "Settings",
-    shortLabel: "Settings",
+    href: "/app/village",
+    label: "Village",
+    icon: VillageIcon,
+  },
+  {
+    href: "/app/protect",
+    label: "Protect",
+    icon: ProtectIcon,
+  },
+  {
+    href: "/app/patterns",
+    label: "Patterns",
+    icon: PatternsIcon,
   },
 ];
 
@@ -40,58 +53,32 @@ export function AppShellNav() {
   const pathname = usePathname();
 
   return (
-    <>
-      <nav
-        aria-label="Primary"
-        className="hidden rounded-[1.75rem] border border-white/70 bg-white/85 p-2 shadow-[0_18px_55px_rgba(15,23,42,0.08)] backdrop-blur md:block"
-      >
-        <div className="flex items-center gap-2">
-          {appNavItems.map((item) => {
-            const active = isItemActive(pathname, item.href);
+    <nav
+      aria-label="Bottom navigation"
+      className="sticky bottom-0 z-20 mt-auto rounded-[1.6rem] border border-border-subtle bg-surface/95 px-2 pt-2 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur"
+    >
+      <div className="grid grid-cols-5 gap-1">
+        {appNavItems.map((item) => {
+          const active = isItemActive(pathname, item.href);
+          const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`rounded-full px-4 py-2.5 text-sm font-semibold transition ${
-                  active
-                    ? "bg-emerald-900 text-white shadow-[0_12px_30px_rgba(6,78,59,0.28)]"
-                    : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-950"
-                }`}
-              >
-                {item.label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-
-      <nav
-        aria-label="Bottom navigation"
-        className="fixed inset-x-4 bottom-4 z-20 rounded-[1.75rem] border border-white/70 bg-white/92 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur md:hidden"
-      >
-        <div className="grid grid-cols-4 gap-1">
-          {appNavItems.map((item) => {
-            const active = isItemActive(pathname, item.href);
-
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={active ? "page" : undefined}
-                className={`rounded-2xl px-2 py-3 text-center text-[0.72rem] font-semibold transition ${
-                  active
-                    ? "bg-emerald-900 text-white"
-                    : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-950"
-                }`}
-              >
-                {item.shortLabel}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-    </>
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-[1.15rem] px-1 py-2 text-center transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface ${
+                active
+                  ? "bg-[#edf2ff] text-nav-active"
+                  : "text-nav-inactive hover:bg-surface-panel"
+              }`}
+            >
+              <Icon className="h-5 w-5" />
+              <span className="text-[0.72rem] font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
