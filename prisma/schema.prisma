@@ -9,9 +9,94 @@ datasource db {
   provider = "postgresql"
 }
 
-// Deliberately minimal bootstrap model. Real product schema belongs in a later lane.
-model AppBootstrapMarker {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  note      String   @default("postgres-foundation")
+enum PetSpecies {
+  DOG
+  CAT
+  OTHER
+
+  @@map("pet_species")
+}
+
+enum SubscriptionStatus {
+  INACTIVE
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+
+  @@map("subscription_status")
+}
+
+enum PetLogType {
+  MEAL
+  MEDICATION
+  SYMPTOM
+  BEHAVIOR
+  NOTE
+
+  @@map("pet_log_type")
+}
+
+model AppUser {
+  id               String         @id @default(cuid())
+  externalAuthId   String?        @unique @map("external_auth_id")
+  email            String         @unique
+  displayName      String?        @map("display_name")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  pets             Pet[]
+  subscriptions    Subscription[]
+
+  @@map("app_users")
+}
+
+model Pet {
+  id         String      @id @default(cuid())
+  userId     String      @map("user_id")
+  name       String
+  species    PetSpecies
+  sex        String?
+  breed      String?
+  birthDate  DateTime?   @map("birth_date") @db.Date
+  weightValue Decimal?   @map("weight_value") @db.Decimal(6, 2)
+  weightUnit String?     @map("weight_unit")
+  photoUrl   String?     @map("photo_url")
+  createdAt  DateTime    @default(now()) @map("created_at")
+  updatedAt  DateTime    @updatedAt @map("updated_at")
+  user       AppUser     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  logs       PetLog[]
+
+  @@index([userId])
+  @@map("pets")
+}
+
+model Subscription {
+  id                     String             @id @default(cuid())
+  userId                 String             @map("user_id")
+  provider               String?
+  externalSubscriptionId String?            @unique @map("external_subscription_id")
+  status                 SubscriptionStatus @default(INACTIVE)
+  planKey                String?            @map("plan_key")
+  currentPeriodEnd       DateTime?          @map("current_period_end")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+  user                   AppUser            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("subscriptions")
+}
+
+model PetLog {
+  id        String     @id @default(cuid())
+  petId     String     @map("pet_id")
+  logType   PetLogType @map("log_type")
+  title     String
+  notes     String?
+  loggedAt  DateTime   @default(now()) @map("logged_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  pet       Pet        @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@index([petId, loggedAt])
+  @@map("pet_logs")
 }
