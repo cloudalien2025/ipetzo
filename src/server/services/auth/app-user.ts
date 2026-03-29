@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { auth, currentUser } from "@clerk/nextjs/server";
 
 import type { AppUser } from "@/generated/prisma/client";
@@ -159,6 +161,15 @@ async function syncAppUser(identity: ClerkIdentity): Promise<AppUser> {
   }
 }
 
+function isRecoverableAppUserSyncError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error.code === "P1001" || error.code === "P1011")
+  );
+}
+
 export async function getAuthenticatedSession(): Promise<AuthenticatedSession> {
   if (!isClerkConfigured()) {
     return {
@@ -188,9 +199,24 @@ export async function ensureCurrentAppUser(): Promise<AppUser | null> {
     return null;
   }
 
-  return syncAppUser(identity);
+  try {
+    return await syncAppUser(identity);
+  } catch (error) {
+    if (isRecoverableAppUserSyncError(error)) {
+      console.error(
+        "Failed to sync the authenticated app user because the runtime database connection is unavailable.",
+        error,
+      );
+
+      return null;
+    }
+
+    throw error;
+  }
 }
 
+const getCachedCurrentAuthenticatedAppUser = cache(ensureCurrentAppUser);
+
 export async function getCurrentAuthenticatedAppUser(): Promise<AppUser | null> {
-  return ensureCurrentAppUser();
+  return getCachedCurrentAuthenticatedAppUser();
 }
