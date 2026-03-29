@@ -6,32 +6,38 @@ const globalForPrisma = globalThis as typeof globalThis & {
   prisma?: PrismaClient;
 };
 
-const rawConnectionString = process.env.DATABASE_URL;
-const disableSslVerification =
-  process.env.DATABASE_SSL_REJECT_UNAUTHORIZED === "false";
+export function getPrismaClient(): PrismaClient {
+  if (globalForPrisma.prisma) {
+    return globalForPrisma.prisma;
+  }
 
-if (!rawConnectionString) {
-  throw new Error("DATABASE_URL is not set.");
-}
+  const rawConnectionString = process.env.DATABASE_URL;
+  const disableSslVerification =
+    process.env.DATABASE_SSL_REJECT_UNAUTHORIZED === "false";
 
-const connectionUrl = new URL(rawConnectionString);
+  if (!rawConnectionString) {
+    throw new Error("DATABASE_URL is not set.");
+  }
 
-if (disableSslVerification) {
-  connectionUrl.searchParams.delete("sslmode");
-}
+  const connectionUrl = new URL(rawConnectionString);
 
-const adapter = new PrismaPg({
-  connectionString: connectionUrl.toString(),
-  ...(disableSslVerification ? { ssl: { rejectUnauthorized: false } } : {}),
-});
+  if (disableSslVerification) {
+    connectionUrl.searchParams.delete("sslmode");
+  }
 
-export const prisma =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  const adapter = new PrismaPg({
+    connectionString: connectionUrl.toString(),
+    ...(disableSslVerification ? { ssl: { rejectUnauthorized: false } } : {}),
+  });
+
+  const prisma = new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
   });
 
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma;
+  if (process.env.NODE_ENV !== "production") {
+    globalForPrisma.prisma = prisma;
+  }
+
+  return prisma;
 }
