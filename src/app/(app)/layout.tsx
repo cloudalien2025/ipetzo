@@ -1,17 +1,20 @@
 import { auth } from "@clerk/nextjs/server";
 
+import { AppShell } from "@/components/layout/app-shell";
 import { isClerkConfigured } from "@/lib/auth/clerk";
-import { ensureCurrentAppUser } from "@/server/services/auth/app-user";
+import { getCurrentAuthenticatedAppUser } from "@/server/services/auth/app-user";
 
 export default async function ProtectedAppLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  let appUser = null;
+
   if (isClerkConfigured()) {
     await auth.protect();
-    await ensureCurrentAppUser();
+    appUser = await getCurrentAuthenticatedAppUser();
   }
 
-  return children;
+  return <AppShell appUser={appUser}>{children}</AppShell>;
 }
