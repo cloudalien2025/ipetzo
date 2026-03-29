@@ -3,10 +3,13 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+// Datasource URLs are supplied by prisma.config.ts so Prisma CLI commands can
+// prefer DIRECT_URL while `prisma generate` stays safe when DB env vars are absent.
 datasource db {
   provider = "postgresql"
 }
 
+// Deliberately minimal bootstrap model. Real product schema belongs in a later lane.
 model AppBootstrapMarker {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())

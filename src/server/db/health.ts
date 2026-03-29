@@ -1,4 +1,4 @@
-import { getPrismaClient } from "@/server/db/prisma";
+import { getPrismaClient, hasRuntimeDatabaseUrl } from "@/server/db/prisma";
 
 type DatabaseHealthResult =
   | {
@@ -7,10 +7,21 @@ type DatabaseHealthResult =
     }
   | {
       ok: false;
+      database: "not-configured";
+    }
+  | {
+      ok: false;
       database: "unreachable";
     };
 
 export async function checkDatabaseHealth(): Promise<DatabaseHealthResult> {
+  if (!hasRuntimeDatabaseUrl()) {
+    return {
+      ok: false,
+      database: "not-configured",
+    };
+  }
+
   try {
     const prisma = getPrismaClient();
     const rows = await prisma.$queryRaw<Array<{ result: number }>>`SELECT 1 AS result`;
