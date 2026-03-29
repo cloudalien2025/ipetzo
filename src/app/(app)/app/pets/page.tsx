@@ -1,26 +1,10 @@
-import { EmptyStateCard } from "@/components/shared/empty-state-card";
-import { PageFrame } from "@/components/shared/page-frame";
+import { PlaceholderTabScreen } from "@/components/layout/app-shell-primitives";
 
 export default function PetsShellPage() {
   return (
-    <PageFrame
-      eyebrow="Pets"
-      title="No pets in the shell yet"
-      description="This page holds the place where each pet will anchor records, routines, and care context. The shell is ready; the pet creation lane comes next."
-    >
-      <EmptyStateCard
-        label="Coming next"
-        title="Pet setup belongs here"
-        description="Expect the first pet creation flow to land in this area, followed by lightweight pet context that other parts of the app can rely on."
-        action={{
-          href: "/app",
-          label: "Back to dashboard",
-        }}
-        secondaryAction={{
-          href: "/app/timeline",
-          label: "Preview timeline shell",
-        }}
-      />
-    </PageFrame>
+    <PlaceholderTabScreen
+      title="Pets"
+      description="Pet setup and CRUD stay outside this shell refresh. This route remains available as a minimal placeholder so existing URLs do not break while the new five-tab navigation focuses on Today, Timeline, Village, Protect, and Patterns."
+    />
   );
 }

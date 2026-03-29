@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { AppUser } from "@/generated/prisma/client";
 
 import { AppShellNav } from "@/components/layout/app-shell-nav";
+import { PetSelector } from "@/components/layout/app-shell-primitives";
 
 type AppShellProps = {
   appUser: AppUser | null;
@@ -18,41 +19,31 @@ function getGreeting(appUser: AppUser | null): string {
 }
 
 export function AppShell({ appUser, children }: AppShellProps) {
+  const greeting = getGreeting(appUser);
+
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#f8fbf8_0%,#eef6f0_35%,#f7f3ea_100%)] text-slate-900">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-4 pb-28 pt-4 sm:px-6 sm:pb-32 sm:pt-6">
-        <header className="rounded-[2rem] border border-white/70 bg-white/85 px-5 py-5 shadow-[0_20px_70px_rgba(15,23,42,0.08)] backdrop-blur sm:px-7">
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <Link
-                  href="/app"
-                  className="inline-flex items-center rounded-full border border-emerald-900/10 bg-emerald-50 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.18em] text-emerald-900 uppercase"
-                >
-                  iPetzo app
-                </Link>
-                <h1 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
-                  Hi, {getGreeting(appUser)}.
-                </h1>
-                <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
-                  Keep each pet at the center. The shell is ready for records,
-                  timeline, and care workflows to plug in next.
-                </p>
-              </div>
-
-              <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50/90 px-4 py-3 text-sm text-slate-600">
-                <p className="font-semibold text-slate-900">
-                  {appUser?.displayName ?? "Authenticated account"}
-                </p>
-                <p className="mt-1 break-all">{appUser?.email ?? "Signed in"}</p>
-              </div>
+    <div className="min-h-screen bg-app-bg text-text-primary">
+      <div className="mx-auto flex min-h-screen w-full max-w-[34rem] flex-col px-4 py-4 sm:px-5 sm:py-5 lg:py-6">
+        <div className="flex min-h-[calc(100vh-2rem)] flex-1 flex-col rounded-[var(--radius-shell)] border border-border-subtle/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(255,255,255,0.28))] p-3 sm:min-h-[calc(100vh-2.5rem)] sm:p-4">
+          <header className="space-y-3">
+            <div className="flex items-center justify-between px-1">
+              <Link
+                href="/app"
+                className="text-sm font-semibold tracking-tight text-text-primary transition hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+              >
+                iPetzo
+              </Link>
+              <p className="text-xs text-text-secondary">Today shell</p>
             </div>
+            <PetSelector />
+            <span className="sr-only">
+              Authenticated shell for {appUser?.displayName ?? greeting}
+            </span>
+          </header>
 
-            <AppShellNav />
-          </div>
-        </header>
-
-        <main className="flex-1 py-6 sm:py-8">{children}</main>
+          <main className="flex-1 px-1 pt-4 pb-5 sm:pt-5">{children}</main>
+          <AppShellNav />
+        </div>
       </div>
     </div>
   );

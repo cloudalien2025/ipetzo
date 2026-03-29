@@ -4,6 +4,8 @@ import { AppShell } from "@/components/layout/app-shell";
 import { isClerkConfigured } from "@/lib/auth/clerk";
 import { getCurrentAuthenticatedAppUser } from "@/server/services/auth/app-user";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProtectedAppLayout({
   children,
 }: Readonly<{
