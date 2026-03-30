@@ -62,6 +62,10 @@ function formatPetSpecies(species: PetSpecies): string {
   return "Pet";
 }
 
+export function PetSpeciesBadge({ species }: { species: PetSpecies }) {
+  return <StatusPill>{formatPetSpecies(species)}</StatusPill>;
+}
+
 function formatWeight(pet: PetSummary): string | null {
   if (!pet.weightValue) {
     return null;
@@ -92,6 +96,24 @@ export function ChevronUpDownIcon({ className }: IconProps) {
     >
       <path
         d="m7 10 5-5 5 5M17 14l-5 5-5-5"
+        stroke="currentColor"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function CheckIcon({ className }: IconProps) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 24 24"
+      fill="none"
+      className={iconClassName(className)}
+    >
+      <path
+        d="m5.5 12.5 4.25 4.25L18.5 8"
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -381,14 +403,29 @@ export function PatternsIcon({ className }: IconProps) {
   );
 }
 
-export function PetSelector({ pet }: { pet: PetSummary | null }) {
+export function PetSelector({
+  pet,
+  detail,
+  interactive = false,
+}: {
+  pet: PetSummary | null;
+  detail?: string;
+  interactive?: boolean;
+}) {
   return (
     <div
-      className="flex w-full items-center justify-center gap-3 rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-3.5 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+      className={`flex w-full items-center justify-between gap-3 rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-3.5 text-left text-sm font-semibold text-text-primary transition ${
+        interactive ? "cursor-pointer hover:border-nav-active/45" : ""
+      } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg`}
       aria-label={pet ? `Current pet ${pet.name}` : "No pets yet"}
     >
-      <span>{pet ? pet.name : "No pets yet"}</span>
-      <ChevronUpDownIcon className="h-4 w-4 text-text-secondary" />
+      <span className="min-w-0">
+        <span className="block truncate">{pet ? pet.name : "No pets yet"}</span>
+        {detail ? (
+          <span className="mt-1 block text-xs font-medium text-text-secondary">{detail}</span>
+        ) : null}
+      </span>
+      {interactive ? <ChevronUpDownIcon className="h-4 w-4 text-text-secondary" /> : null}
     </div>
   );
 }
@@ -402,8 +439,6 @@ export function StatusPill({ children }: { children: React.ReactNode }) {
 }
 
 export function PetHeader({ pet }: { pet: PetSummary }) {
-  const speciesLabel = formatPetSpecies(pet.species);
-
   return (
     <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
       <div className="flex items-center gap-3 sm:gap-4">
@@ -415,7 +450,7 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
             {pet.name}
           </p>
           <div className="mt-2">
-            <StatusPill>{speciesLabel}</StatusPill>
+            <PetSpeciesBadge species={pet.species} />
           </div>
         </div>
       </div>

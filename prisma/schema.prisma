@@ -42,11 +42,14 @@ model AppUser {
   externalAuthId   String?        @unique @map("external_auth_id")
   email            String         @unique
   displayName      String?        @map("display_name")
+  currentPetId     String?        @map("current_pet_id")
   createdAt        DateTime       @default(now()) @map("created_at")
   updatedAt        DateTime       @updatedAt @map("updated_at")
-  pets             Pet[]
+  currentPet       Pet?           @relation("CurrentPetSelection", fields: [currentPetId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  pets             Pet[]          @relation("OwnedPets")
   subscriptions    Subscription[]
 
+  @@index([currentPetId])
   @@map("app_users")
 }
 
@@ -63,7 +66,8 @@ model Pet {
   photoUrl   String?     @map("photo_url")
   createdAt  DateTime    @default(now()) @map("created_at")
   updatedAt  DateTime    @updatedAt @map("updated_at")
-  user       AppUser     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  selectedBy AppUser[]   @relation("CurrentPetSelection")
+  user       AppUser     @relation("OwnedPets", fields: [userId], references: [id], onDelete: Cascade)
   logs       PetLog[]
 
   @@index([userId])

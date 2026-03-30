@@ -3,12 +3,12 @@ import Link from "next/link";
 import type { AppUser } from "@/generated/prisma/client";
 
 import { AppShellNav } from "@/components/layout/app-shell-nav";
-import { PetSelector } from "@/components/layout/app-shell-primitives";
-import type { PetSummary } from "@/server/services/pets";
+import { CurrentPetSwitcher } from "@/components/layout/current-pet-switcher";
+import type { AuthenticatedPetContext } from "@/server/services/pets";
 
 type AppShellProps = {
   appUser: AppUser | null;
-  currentPet: PetSummary | null;
+  petContext: AuthenticatedPetContext;
   children: React.ReactNode;
 };
 
@@ -20,7 +20,7 @@ function getGreeting(appUser: AppUser | null): string {
   return "there";
 }
 
-export function AppShell({ appUser, currentPet, children }: AppShellProps) {
+export function AppShell({ appUser, petContext, children }: AppShellProps) {
   const greeting = getGreeting(appUser);
 
   return (
@@ -37,7 +37,7 @@ export function AppShell({ appUser, currentPet, children }: AppShellProps) {
               </Link>
               <p className="text-xs text-text-secondary">Today shell</p>
             </div>
-            <PetSelector pet={currentPet} />
+            <CurrentPetSwitcher petContext={petContext} />
             <span className="sr-only">
               Authenticated shell for {appUser?.displayName ?? greeting}
             </span>
