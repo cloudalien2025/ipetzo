@@ -4,6 +4,7 @@ import type { AppUser } from "@/generated/prisma/client";
 
 import { AppShellNav } from "@/components/layout/app-shell-nav";
 import { CurrentPetSwitcher } from "@/components/layout/current-pet-switcher";
+import { SparkIcon } from "@/components/layout/app-shell-primitives";
 import { MAX_PETS_PER_ACCOUNT } from "@/server/services/pets";
 import type { AuthenticatedPetContext } from "@/server/services/pets";
 
@@ -23,46 +24,51 @@ function getGreeting(appUser: AppUser | null): string {
 
 export function AppShell({ appUser, petContext, children }: AppShellProps) {
   const greeting = getGreeting(appUser);
-  const currentPet = petContext.currentPet;
   const canAddAnotherPet = petContext.petCount < MAX_PETS_PER_ACCOUNT;
 
   return (
     <div className="min-h-dvh bg-app-bg text-text-primary">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[32rem] flex-col px-2 pt-2 pb-0 sm:px-4 sm:pt-4">
-        <div className="flex min-h-0 flex-1 flex-col rounded-t-[1.75rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)] sm:rounded-t-[2.25rem]">
-          <header className="px-4 pt-4 sm:px-5 sm:pt-5">
-            <div className="flex items-center justify-between px-1">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[38rem] flex-col px-2 pt-2 pb-0 sm:px-4 sm:pt-4">
+        <div className="flex min-h-0 flex-1 flex-col rounded-t-[1.75rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)] sm:rounded-t-[2rem]">
+          <header className="px-3.5 pt-3.5 sm:px-5 sm:pt-4">
+            <div className="flex items-center justify-between gap-3">
               <Link
                 href="/app"
-                className="text-sm font-semibold tracking-tight text-text-primary transition hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                className="inline-flex items-center gap-2 rounded-full px-1 py-1 text-sm font-semibold tracking-tight text-text-primary transition hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
               >
-                iPetzo
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[linear-gradient(180deg,#fff7ee_0%,#ecd7b7_100%)] text-[#7d5b39] shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]">
+                  <SparkIcon className="h-4 w-4" />
+                </span>
+                <span>iPetzo</span>
               </Link>
-              <p className="text-[0.72rem] font-medium tracking-[0.18em] text-text-muted uppercase">
-                Care Today
-              </p>
+              {canAddAnotherPet ? (
+                <Link
+                  href="/app/pets/new"
+                  aria-label="Add pet"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-soft bg-surface/82 text-text-secondary transition hover:border-nav-active/35 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                >
+                  <span className="text-lg leading-none">+</span>
+                </Link>
+              ) : (
+                <span className="text-[0.68rem] font-medium tracking-[0.18em] text-text-muted uppercase">
+                  {petContext.currentPet ? "Care Today" : "Welcome"}
+                </span>
+              )}
             </div>
-            <div className="mt-4 flex justify-center">
-              <div className="w-full max-w-[22rem]">
-                <CurrentPetSwitcher petContext={petContext} />
-              </div>
+            <div className="mt-3">
+              <CurrentPetSwitcher petContext={petContext} />
             </div>
-            {currentPet ? (
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-2 px-1">
+            {petContext.currentPet ? (
+              <div className="mt-2 flex items-center justify-between px-1">
+                <p className="truncate pr-3 text-[0.75rem] font-medium text-text-secondary">
+                  {petContext.currentPet.name}&rsquo;s command center
+                </p>
                 <Link
                   href="/app/pet"
-                  className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-center text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                  className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3 py-1.5 text-center text-[0.72rem] font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                 >
-                  Open {currentPet.name}&rsquo;s profile
+                  Profile
                 </Link>
-                {canAddAnotherPet ? (
-                  <Link
-                    href="/app/pets/new"
-                    className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-center text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
-                  >
-                    Add pet
-                  </Link>
-                ) : null}
               </div>
             ) : null}
             <span className="sr-only">
@@ -70,7 +76,7 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
             </span>
           </header>
 
-          <main className="flex-1 px-4 pt-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))]">
+          <main className="flex-1 px-3.5 pt-3.5 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-4 sm:pb-[calc(6rem+env(safe-area-inset-bottom))]">
             {children}
           </main>
           <AppShellNav />

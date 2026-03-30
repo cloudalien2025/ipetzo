@@ -49,13 +49,15 @@ function SwitchPetButton({
     <button
       type="submit"
       disabled={pending || isCurrent}
-      className="flex w-full items-center justify-between gap-3 rounded-[1.2rem] border border-border-soft bg-surface px-4 py-3.5 text-left transition hover:border-nav-active/35 hover:bg-surface-soft disabled:cursor-default disabled:opacity-100"
+      className="flex w-full items-center justify-between gap-3 rounded-[1rem] border border-border-soft bg-surface px-3.5 py-3 text-left transition hover:border-nav-active/35 hover:bg-surface-soft disabled:cursor-default disabled:opacity-100"
     >
       <span className="min-w-0">
         <span className="block truncate text-sm font-semibold text-text-primary">{name}</span>
-        <span className="mt-1 block text-xs font-medium text-text-secondary">{speciesLabel}</span>
+        <span className="mt-0.5 block text-[0.72rem] font-medium text-text-secondary">
+          {speciesLabel}
+        </span>
       </span>
-      <span className="flex shrink-0 items-center gap-2 text-xs font-semibold text-text-secondary">
+      <span className="flex shrink-0 items-center gap-2 text-[0.72rem] font-semibold text-text-secondary">
         {isCurrent ? (
           <>
             <CheckIcon className="h-4 w-4 text-nav-active" />
@@ -100,11 +102,11 @@ export function CurrentPetSwitcher({ petContext }: { petContext: AuthenticatedPe
         />
       </summary>
 
-      <div className="absolute inset-x-0 top-[calc(100%+0.75rem)] z-20 rounded-[1.7rem] border border-border-soft bg-[#fbf8f3] p-3 shadow-[0_22px_44px_rgba(42,52,68,0.16)]">
-        <div className="flex items-center justify-between gap-3 px-2 pb-3">
+      <div className="absolute inset-x-0 top-[calc(100%+0.55rem)] z-20 rounded-[1.35rem] border border-border-soft bg-[#fbf8f3] p-2.5 shadow-[0_20px_36px_rgba(42,52,68,0.14)]">
+        <div className="flex items-center justify-between gap-3 px-1.5 pb-2.5">
           <div>
             <p className="text-sm font-semibold text-text-primary">Switch current pet</p>
-            <p className="mt-1 text-xs text-text-secondary">
+            <p className="mt-0.5 text-[0.72rem] text-text-secondary">
               Your selection is saved to your account.
             </p>
           </div>
