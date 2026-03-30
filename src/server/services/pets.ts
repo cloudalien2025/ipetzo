@@ -5,6 +5,8 @@ import { getPrismaClient, hasRuntimeDatabaseUrl } from "@/server/db/prisma";
 import { getCurrentAuthenticatedAppUser } from "@/server/services/auth/app-user";
 import { resolveCurrentPetFromSummaries } from "@/server/services/pet-context";
 
+export const MAX_PETS_PER_ACCOUNT = 5;
+
 export type PetSummary = Pick<
   Pet,
   | "id"
@@ -33,6 +35,16 @@ export type CreatePetInput = {
   weightValue: number | null;
   weightUnit: string | null;
 };
+
+export type CreatePetForCurrentUserResult =
+  | {
+      status: "created";
+      pet: PetSummary;
+    }
+  | {
+      status: "limit_reached";
+      petCount: number;
+    };
 
 export async function getAuthenticatedPetContext(): Promise<AuthenticatedPetContext> {
   if (!hasRuntimeDatabaseUrl()) {
@@ -80,7 +92,9 @@ export async function getAuthenticatedPetContext(): Promise<AuthenticatedPetCont
   };
 }
 
-export async function createPetForCurrentUser(input: CreatePetInput): Promise<PetSummary> {
+export async function createPetForCurrentUser(
+  input: CreatePetInput,
+): Promise<CreatePetForCurrentUserResult> {
   if (!hasRuntimeDatabaseUrl()) {
     throw new Error("Pet records are not available because DATABASE_URL is not configured.");
   }
@@ -94,6 +108,21 @@ export async function createPetForCurrentUser(input: CreatePetInput): Promise<Pe
   const prisma = getPrismaClient();
 
   return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM app_users WHERE id = ${appUser.id} FOR UPDATE`;
+
+    const petCount = await tx.pet.count({
+      where: {
+        userId: appUser.id,
+      },
+    });
+
+    if (petCount >= MAX_PETS_PER_ACCOUNT) {
+      return {
+        status: "limit_reached" as const,
+        petCount,
+      };
+    }
+
     const pet = await tx.pet.create({
       data: {
         userId: appUser.id,
@@ -118,18 +147,19 @@ export async function createPetForCurrentUser(input: CreatePetInput): Promise<Pe
       },
     });
 
-    if (!appUser.currentPetId) {
-      await tx.appUser.update({
-        where: {
-          id: appUser.id,
-        },
-        data: {
-          currentPetId: pet.id,
-        },
-      });
-    }
+    await tx.appUser.update({
+      where: {
+        id: appUser.id,
+      },
+      data: {
+        currentPetId: pet.id,
+      },
+    });
 
-    return pet;
+    return {
+      status: "created" as const,
+      pet,
+    };
   });
 }
 

@@ -1,9 +1,13 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
 import { PetSpecies } from "@/generated/prisma/client";
-import { createPetForCurrentUser, getAuthenticatedPetContext } from "@/server/services/pets";
+import {
+  createPetForCurrentUser,
+  MAX_PETS_PER_ACCOUNT,
+} from "@/server/services/pets";
 
 export type CreatePetFormState = {
   error: string | null;
@@ -69,12 +73,6 @@ export async function createPetAction(
   _previousState: CreatePetFormState = initialState,
   formData: FormData,
 ): Promise<CreatePetFormState> {
-  const existingContext = await getAuthenticatedPetContext();
-
-  if (existingContext.petCount > 0) {
-    redirect("/app");
-  }
-
   const name = getTrimmedString(formData, "name");
 
   if (!name) {
@@ -100,7 +98,7 @@ export async function createPetAction(
   }
 
   try {
-    await createPetForCurrentUser({
+    const result = await createPetForCurrentUser({
       name,
       species,
       sex: getOptionalString(formData, "sex"),
@@ -109,6 +107,12 @@ export async function createPetAction(
       weightValue,
       weightUnit: weightValue ? getOptionalString(formData, "weightUnit") ?? "lb" : null,
     });
+
+    if (result.status === "limit_reached") {
+      return {
+        error: `You've reached the current limit of ${MAX_PETS_PER_ACCOUNT} pets on this account.`,
+      };
+    }
   } catch (error) {
     console.error("Failed to create pet.", error);
 
@@ -117,5 +121,7 @@ export async function createPetAction(
     };
   }
 
+  revalidatePath("/app", "layout");
+  revalidatePath("/app");
   redirect("/app");
 }
