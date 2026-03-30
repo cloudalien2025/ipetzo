@@ -22,6 +22,7 @@ function getGreeting(appUser: AppUser | null): string {
 
 export function AppShell({ appUser, petContext, children }: AppShellProps) {
   const greeting = getGreeting(appUser);
+  const currentPet = petContext.currentPet;
 
   return (
     <div className="min-h-screen bg-app-bg text-text-primary">
@@ -38,6 +39,16 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
               <p className="text-xs text-text-secondary">Today shell</p>
             </div>
             <CurrentPetSwitcher petContext={petContext} />
+            {currentPet ? (
+              <div className="px-1">
+                <Link
+                  href="/app/pet"
+                  className="inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                >
+                  Open {currentPet.name}&rsquo;s profile
+                </Link>
+              </div>
+            ) : null}
             <span className="sr-only">
               Authenticated shell for {appUser?.displayName ?? greeting}
             </span>

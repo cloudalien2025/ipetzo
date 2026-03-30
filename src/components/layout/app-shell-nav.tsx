@@ -46,7 +46,11 @@ const appNavItems: AppNavItem[] = [
 ];
 
 function isItemActive(pathname: string, href: string): boolean {
-  return href === "/app" ? pathname === href : pathname.startsWith(href);
+  if (href === "/app") {
+    return pathname === href || pathname.startsWith("/app/pet");
+  }
+
+  return pathname.startsWith(href);
 }
 
 export function AppShellNav() {
