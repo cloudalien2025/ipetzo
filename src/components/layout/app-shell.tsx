@@ -28,9 +28,9 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
 
   return (
     <div className="min-h-screen bg-app-bg text-text-primary">
-      <div className="mx-auto flex min-h-screen w-full max-w-[34rem] flex-col px-4 py-4 sm:px-5 sm:py-5 lg:py-6">
-        <div className="flex min-h-[calc(100vh-2rem)] flex-1 flex-col rounded-[var(--radius-shell)] border border-border-subtle/90 bg-[linear-gradient(180deg,rgba(255,255,255,0.56),rgba(255,255,255,0.28))] p-3 sm:min-h-[calc(100vh-2.5rem)] sm:p-4">
-          <header className="space-y-3">
+      <div className="mx-auto flex min-h-screen w-full max-w-[32rem] flex-col px-3 pt-3 pb-0 sm:px-4 sm:pt-4">
+        <div className="flex min-h-screen flex-1 flex-col rounded-t-[2.25rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)]">
+          <header className="px-4 pt-4 sm:px-5 sm:pt-5">
             <div className="flex items-center justify-between px-1">
               <Link
                 href="/app"
@@ -38,21 +38,27 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
               >
                 iPetzo
               </Link>
-              <p className="text-xs text-text-secondary">Today shell</p>
+              <p className="text-[0.72rem] font-medium tracking-[0.18em] text-text-muted uppercase">
+                Care Today
+              </p>
             </div>
-            <CurrentPetSwitcher petContext={petContext} />
+            <div className="mt-4 flex justify-center">
+              <div className="w-full max-w-[22rem]">
+                <CurrentPetSwitcher petContext={petContext} />
+              </div>
+            </div>
             {currentPet ? (
-              <div className="flex flex-wrap items-center gap-2 px-1">
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2 px-1">
                 <Link
                   href="/app/pet"
-                  className="inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                  className="inline-flex items-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                 >
                   Open {currentPet.name}&rsquo;s profile
                 </Link>
                 {canAddAnotherPet ? (
                   <Link
                     href="/app/pets/new"
-                    className="inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                    className="inline-flex items-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                   >
                     Add pet
                   </Link>
@@ -64,7 +70,7 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
             </span>
           </header>
 
-          <main className="flex-1 px-1 pt-4 pb-5 sm:pt-5">{children}</main>
+          <main className="flex-1 px-4 pt-5 pb-4 sm:px-5 sm:pt-6">{children}</main>
           <AppShellNav />
         </div>
       </div>

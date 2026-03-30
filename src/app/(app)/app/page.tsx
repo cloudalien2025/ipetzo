@@ -66,13 +66,13 @@ export default async function AppHomePage() {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PetHeader pet={petContext.currentPet} />
 
       <EmptyPetOverview pet={petContext.currentPet} />
 
       <section className="space-y-3">
-        <SectionHeader title="Due Now" />
+        <SectionHeader title="Due Now" eyebrow="What matters now" />
         <div className="grid grid-cols-1 gap-3 min-[420px]:grid-cols-3">
           {dueNowItems.map((item) => (
             <TaskCard
@@ -86,7 +86,7 @@ export default async function AppHomePage() {
       </section>
 
       <section className="space-y-3">
-        <SectionHeader title="Village Feed" />
+        <SectionHeader title="Village Feed" eyebrow="Care stream" />
         <div className="space-y-2.5">
           {villageFeedItems.map((item) => (
             <FeedRow
@@ -99,12 +99,12 @@ export default async function AppHomePage() {
       </section>
 
       <section className="space-y-3">
-        <SectionHeader title="Active Concern" />
+        <SectionHeader title="Active Concern" eyebrow="Keep an eye on" />
         <ConcernCard title="Ear Infection Recovery Day 2" />
       </section>
 
       <section className="space-y-3">
-        <SectionHeader title="Quick Actions" />
+        <SectionHeader title="Quick Actions" eyebrow="Jump in fast" />
         <QuickActionsPanel />
       </section>
     </div>
