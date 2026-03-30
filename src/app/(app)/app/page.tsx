@@ -3,12 +3,15 @@ import {
   CapsuleIcon,
   ConcernCard,
   DropIcon,
+  EmptyPetOverview,
   FeedRow,
   PetHeader,
   QuickActionsPanel,
   SectionHeader,
   TaskCard,
 } from "@/components/layout/app-shell-primitives";
+import { EmptyStateCard } from "@/components/shared/empty-state-card";
+import { getAuthenticatedPetContext } from "@/server/services/pets";
 
 const dueNowItems = [
   {
@@ -43,10 +46,30 @@ const villageFeedItems = [
   },
 ] as const;
 
-export default function AppHomePage() {
+export default async function AppHomePage() {
+  const petContext = await getAuthenticatedPetContext();
+
+  if (!petContext.currentPet) {
+    return (
+      <div className="space-y-5">
+        <EmptyStateCard
+          label="Welcome to iPetzo"
+          title="Start with your first pet"
+          description="Add your first pet to start building their care record."
+          action={{
+            href: "/app/pets/new",
+            label: "Add your first pet",
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-5">
-      <PetHeader />
+      <PetHeader pet={petContext.currentPet} />
+
+      <EmptyPetOverview pet={petContext.currentPet} />
 
       <section className="space-y-3">
         <SectionHeader title="Due Now" />

@@ -4,9 +4,11 @@ import type { AppUser } from "@/generated/prisma/client";
 
 import { AppShellNav } from "@/components/layout/app-shell-nav";
 import { PetSelector } from "@/components/layout/app-shell-primitives";
+import type { PetSummary } from "@/server/services/pets";
 
 type AppShellProps = {
   appUser: AppUser | null;
+  currentPet: PetSummary | null;
   children: React.ReactNode;
 };
 
@@ -18,7 +20,7 @@ function getGreeting(appUser: AppUser | null): string {
   return "there";
 }
 
-export function AppShell({ appUser, children }: AppShellProps) {
+export function AppShell({ appUser, currentPet, children }: AppShellProps) {
   const greeting = getGreeting(appUser);
 
   return (
@@ -35,7 +37,7 @@ export function AppShell({ appUser, children }: AppShellProps) {
               </Link>
               <p className="text-xs text-text-secondary">Today shell</p>
             </div>
-            <PetSelector />
+            <PetSelector pet={currentPet} />
             <span className="sr-only">
               Authenticated shell for {appUser?.displayName ?? greeting}
             </span>
