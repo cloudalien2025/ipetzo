@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { isClerkConfigured } from "@/lib/auth/clerk";
 import "./globals.css";
@@ -7,6 +7,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "iPetzo",
   description: "AI operating system for pet parents",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#f6f2ea",
 };
 
 export default function RootLayout({
