@@ -4,6 +4,7 @@ import type { AppUser } from "@/generated/prisma/client";
 
 import { AppShellNav } from "@/components/layout/app-shell-nav";
 import { CurrentPetSwitcher } from "@/components/layout/current-pet-switcher";
+import { MAX_PETS_PER_ACCOUNT } from "@/server/services/pets";
 import type { AuthenticatedPetContext } from "@/server/services/pets";
 
 type AppShellProps = {
@@ -23,6 +24,7 @@ function getGreeting(appUser: AppUser | null): string {
 export function AppShell({ appUser, petContext, children }: AppShellProps) {
   const greeting = getGreeting(appUser);
   const currentPet = petContext.currentPet;
+  const canAddAnotherPet = petContext.petCount < MAX_PETS_PER_ACCOUNT;
 
   return (
     <div className="min-h-screen bg-app-bg text-text-primary">
@@ -40,13 +42,21 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
             </div>
             <CurrentPetSwitcher petContext={petContext} />
             {currentPet ? (
-              <div className="px-1">
+              <div className="flex flex-wrap items-center gap-2 px-1">
                 <Link
                   href="/app/pet"
                   className="inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                 >
                   Open {currentPet.name}&rsquo;s profile
                 </Link>
+                {canAddAnotherPet ? (
+                  <Link
+                    href="/app/pets/new"
+                    className="inline-flex items-center rounded-full border border-border-subtle bg-surface px-3 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                  >
+                    Add pet
+                  </Link>
+                ) : null}
               </div>
             ) : null}
             <span className="sr-only">
