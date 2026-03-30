@@ -1,26 +1,33 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f4f4ee;
-  --foreground: #16233d;
-  --bg-app: #f4f4ee;
-  --bg-surface: #ffffff;
-  --text-primary: #16233d;
-  --text-secondary: #64748b;
-  --border-subtle: #dde4ea;
-  --accent-monitoring: #f4b165;
-  --accent-warning: #e7b04d;
-  --action-blue: #7da6f7;
-  --action-green: #85c58f;
-  --action-red: #ef8d82;
-  --nav-active: #7c97d8;
-  --nav-inactive: #8a99af;
-  --surface-muted: #f8fafc;
-  --surface-panel: #f1f4f7;
-  --focus-ring: #93a8df;
+  --background: #f6f2ea;
+  --foreground: #1d2a3b;
+  --bg-app: #f6f2ea;
+  --bg-app-shell: #f8f4ed;
+  --bg-surface: #fffdf9;
+  --bg-surface-soft: #fcfaf6;
+  --text-primary: #1d2a3b;
+  --text-secondary: #6d7b8d;
+  --text-muted: #8f9bab;
+  --border-subtle: #e4e8ed;
+  --border-soft: rgba(157, 171, 189, 0.28);
+  --accent-monitoring: #f0bf7c;
+  --accent-warning: #e6b669;
+  --action-blue: #8da9df;
+  --action-green: #98c3a3;
+  --action-red: #e7a198;
+  --action-amber: #f2c991;
+  --nav-active: #627cab;
+  --nav-inactive: #8390a3;
+  --surface-muted: #f4f6f8;
+  --surface-panel: #eff3f6;
+  --focus-ring: #8ca3d2;
+  --shadow-soft: 0 18px 40px rgba(46, 58, 74, 0.08);
+  --shadow-nav: 0 -8px 28px rgba(39, 47, 61, 0.06);
   --radius-shell: 2rem;
-  --radius-surface: 1.5rem;
-  --radius-card: 1.125rem;
+  --radius-surface: 1.75rem;
+  --radius-card: 1.35rem;
   --radius-pill: 999px;
 }
 
@@ -28,28 +35,41 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-app-bg: var(--bg-app);
+  --color-app-shell: var(--bg-app-shell);
   --color-surface: var(--bg-surface);
+  --color-surface-soft: var(--bg-surface-soft);
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
   --color-border-subtle: var(--border-subtle);
+  --color-border-soft: var(--border-soft);
   --color-accent-monitoring: var(--accent-monitoring);
   --color-accent-warning: var(--accent-warning);
   --color-action-blue: var(--action-blue);
   --color-action-green: var(--action-green);
   --color-action-red: var(--action-red);
+  --color-action-amber: var(--action-amber);
   --color-nav-active: var(--nav-active);
   --color-nav-inactive: var(--nav-inactive);
   --color-surface-muted: var(--surface-muted);
   --color-surface-panel: var(--surface-panel);
   --color-focus-ring: var(--focus-ring);
-  --font-sans: "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-sans:
+    "Avenir Next", "SF Pro Display", "SF Pro Text", "Segoe UI", Helvetica, Arial,
+    sans-serif;
   --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+html {
+  background: var(--background);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,

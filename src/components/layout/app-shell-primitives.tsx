@@ -9,6 +9,7 @@ type IconProps = {
 
 type SectionHeaderProps = {
   title: string;
+  eyebrow?: string;
 };
 
 type TaskCardProps = {
@@ -62,6 +63,54 @@ function formatPetSpecies(species: PetSpecies): string {
   return "Pet";
 }
 
+function formatBirthDateLabel(birthDate: Date | null): string | null {
+  if (!birthDate) {
+    return null;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(birthDate);
+}
+
+function formatApproximateAgeLabel(birthDate: Date | null, now = new Date()): string | null {
+  if (!birthDate) {
+    return null;
+  }
+
+  let years = now.getUTCFullYear() - birthDate.getUTCFullYear();
+  let months = now.getUTCMonth() - birthDate.getUTCMonth();
+
+  if (now.getUTCDate() < birthDate.getUTCDate()) {
+    months -= 1;
+  }
+
+  if (months < 0) {
+    years -= 1;
+    months += 12;
+  }
+
+  if (years > 1) {
+    return `${years} yrs old`;
+  }
+
+  if (years === 1) {
+    return "1 yr old";
+  }
+
+  if (months > 1) {
+    return `${months} mos old`;
+  }
+
+  if (months === 1) {
+    return "1 mo old";
+  }
+
+  return "New arrival";
+}
+
 export function PetSpeciesBadge({ species }: { species: PetSpecies }) {
   return <StatusPill>{formatPetSpecies(species)}</StatusPill>;
 }
@@ -76,14 +125,14 @@ function formatWeight(pet: PetSummary): string | null {
 
 function quickActionToneClass(tone: QuickActionButtonProps["tone"]): string {
   if (tone === "green") {
-    return "bg-action-green/20 text-[#447553]";
+    return "bg-action-green/20 text-[#447553] ring-1 ring-inset ring-[#93b59b]/45";
   }
 
   if (tone === "red") {
-    return "bg-action-red/20 text-[#9d5249]";
+    return "bg-action-red/20 text-[#9d5249] ring-1 ring-inset ring-[#dca29b]/45";
   }
 
-  return "bg-action-blue/20 text-[#4d6cad]";
+  return "bg-action-blue/20 text-[#4d6cad] ring-1 ring-inset ring-[#9db6e2]/45";
 }
 
 export function ChevronUpDownIcon({ className }: IconProps) {
@@ -412,20 +461,54 @@ export function PetSelector({
   detail?: string;
   interactive?: boolean;
 }) {
+  const petMeta = pet ? [formatPetSpecies(pet.species), pet.breed].filter(Boolean) : [];
+
   return (
     <div
-      className={`flex w-full items-center justify-between gap-3 rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-3.5 text-left text-sm font-semibold text-text-primary transition ${
-        interactive ? "cursor-pointer hover:border-nav-active/45" : ""
+      className={`flex w-full items-center justify-between gap-3 rounded-[1.6rem] border border-border-soft bg-surface px-4 py-3.5 text-left text-sm font-semibold text-text-primary shadow-[0_10px_24px_rgba(42,52,68,0.04)] transition ${
+        interactive ? "cursor-pointer hover:border-nav-active/35 hover:bg-surface-soft" : ""
       } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg`}
       aria-label={pet ? `Current pet ${pet.name}` : "No pets yet"}
     >
-      <span className="min-w-0">
-        <span className="block truncate">{pet ? pet.name : "No pets yet"}</span>
-        {detail ? (
-          <span className="mt-1 block text-xs font-medium text-text-secondary">{detail}</span>
+      <span className="flex min-w-0 items-center gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[radial-gradient(circle_at_top,#f5ddbb,#e6c79c_72%)] text-sm font-bold tracking-tight text-text-primary">
+          {pet ? getInitials(pet.name) : "IP"}
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+            Current pet
+          </span>
+          <span className="mt-1 block truncate text-[0.98rem] font-semibold tracking-tight">
+            {pet ? pet.name : "No pets yet"}
+          </span>
+          <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+            {petMeta.length > 0 ? (
+              petMeta.map((meta) => (
+                <span
+                  key={meta}
+                  className="inline-flex items-center rounded-full bg-surface-panel px-2.5 py-1 text-[0.68rem] font-semibold tracking-tight text-text-secondary"
+                >
+                  {meta}
+                </span>
+              ))
+            ) : detail ? (
+              <span className="text-xs font-medium text-text-secondary">{detail}</span>
+            ) : null}
+          </span>
+        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-2">
+        {detail && petMeta.length > 0 ? (
+          <span className="hidden text-[0.72rem] font-medium text-text-secondary min-[400px]:inline">
+            {detail}
+          </span>
+        ) : null}
+        {interactive ? (
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-surface-panel text-text-secondary">
+            <ChevronUpDownIcon className="h-4 w-4" />
+          </span>
         ) : null}
       </span>
-      {interactive ? <ChevronUpDownIcon className="h-4 w-4 text-text-secondary" /> : null}
     </div>
   );
 }
@@ -439,19 +522,63 @@ export function StatusPill({ children }: { children: React.ReactNode }) {
 }
 
 export function PetHeader({ pet }: { pet: PetSummary }) {
+  const ageLabel = formatApproximateAgeLabel(pet.birthDate);
+  const careSince = new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    year: "numeric",
+  }).format(pet.createdAt);
+  const detailChips = [
+    formatPetSpecies(pet.species),
+    pet.breed,
+    pet.sex,
+    formatWeight(pet),
+  ].filter(Boolean);
+
   return (
-    <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
-      <div className="flex items-center gap-3 sm:gap-4">
-        <div className="flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center rounded-full bg-[#eadbc9] text-lg font-semibold text-text-primary sm:h-16 sm:w-16">
+    <section className="overflow-hidden rounded-[2rem] border border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6f1e9_100%)] px-5 py-5 shadow-[0_16px_32px_rgba(40,50,66,0.06)]">
+      <div className="flex flex-col items-center text-center">
+        <span className="inline-flex items-center rounded-full bg-white/85 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+          Today with {pet.name}
+        </span>
+        <div className="mt-4 flex h-24 w-24 items-center justify-center rounded-full bg-[radial-gradient(circle_at_top,#f7e8cf,#e8cda6_70%)] text-[1.7rem] font-bold tracking-tight text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           {getInitials(pet.name)}
         </div>
-        <div className="min-w-0">
-          <p className="text-[1.55rem] leading-tight font-bold tracking-tight text-text-primary">
+        <div className="mt-4 min-w-0">
+          <h1 className="text-[2.15rem] leading-none font-bold tracking-tight text-text-primary">
             {pet.name}
+          </h1>
+          <p className="mt-3 max-w-[18rem] text-sm leading-6 text-text-secondary">
+            Everything important for {pet.name}&rsquo;s care, routines, and active
+            watch items lives here.
           </p>
-          <div className="mt-2">
-            <PetSpeciesBadge species={pet.species} />
-          </div>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <PetSpeciesBadge species={pet.species} />
+          {detailChips.slice(1).map((chip) => (
+            <span
+              key={chip}
+              className="inline-flex items-center rounded-full border border-border-soft bg-white/80 px-3 py-1 text-xs font-semibold text-text-secondary"
+            >
+              {chip}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="rounded-[1.4rem] border border-border-soft bg-white/78 px-4 py-3.5 text-left">
+          <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+            Care record
+          </p>
+          <p className="mt-2 text-base font-semibold text-text-primary">Since {careSince}</p>
+        </div>
+        <div className="rounded-[1.4rem] border border-border-soft bg-white/78 px-4 py-3.5 text-left">
+          <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+            Snapshot
+          </p>
+          <p className="mt-2 text-base font-semibold text-text-primary">
+            {ageLabel ?? "Profile growing"}
+          </p>
         </div>
       </div>
     </section>
@@ -462,46 +589,50 @@ export function EmptyPetOverview({ pet }: { pet: PetSummary }) {
   const facts = [
     pet.breed,
     pet.sex,
-    pet.birthDate
-      ? new Intl.DateTimeFormat("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        }).format(pet.birthDate)
-      : null,
+    formatBirthDateLabel(pet.birthDate),
     formatWeight(pet),
   ].filter(Boolean);
 
   return (
-    <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
-      <p className="text-sm font-semibold text-text-primary">Care record started</p>
+    <section className="rounded-[1.7rem] border border-border-soft bg-surface px-4 py-4 sm:px-5">
+      <p className="text-[0.72rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+        Pet overview
+      </p>
       <p className="mt-2 text-sm leading-6 text-text-secondary">
         {facts.length > 0
-          ? `${pet.name} is now part of your iPetzo account. ${facts.join(" • ")}`
-          : `${pet.name} is now part of your iPetzo account.`}
+          ? `${pet.name}'s profile is grounded with ${facts.join(" • ")}.`
+          : `${pet.name} is part of your iPetzo account and ready for care tracking.`}
       </p>
     </section>
   );
 }
 
-export function SectionHeader({ title }: SectionHeaderProps) {
+export function SectionHeader({ title, eyebrow }: SectionHeaderProps) {
   return (
-    <h2 className="text-lg font-semibold tracking-tight text-text-primary">
-      {title}
-    </h2>
+    <div className="space-y-1 px-1">
+      {eyebrow ? (
+        <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+          {eyebrow}
+        </p>
+      ) : null}
+      <h2 className="text-[1.28rem] font-semibold tracking-tight text-text-primary">{title}</h2>
+    </div>
   );
 }
 
 export function TaskCard({ icon, title, detail }: TaskCardProps) {
   return (
-    <article className="rounded-[var(--radius-card)] border border-border-subtle bg-surface px-3.5 py-3.5">
+    <article className="rounded-[1.45rem] border border-border-soft bg-surface px-4 py-4 shadow-[0_10px_22px_rgba(42,52,68,0.04)]">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-panel text-text-primary">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eef3fb] text-[#5671a0]">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="text-sm font-semibold text-text-primary">{title}</p>
-          <p className="mt-1 text-xs text-text-secondary">{detail}</p>
+          <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+            Due now
+          </p>
+          <p className="mt-2 text-sm font-semibold text-text-primary">{title}</p>
+          <p className="mt-1 text-xs font-medium text-text-secondary">{detail}</p>
         </div>
       </div>
     </article>
@@ -510,8 +641,8 @@ export function TaskCard({ icon, title, detail }: TaskCardProps) {
 
 export function FeedRow({ actor, action }: FeedRowProps) {
   return (
-    <article className="flex items-center gap-3 rounded-[var(--radius-card)] border border-border-subtle bg-surface px-3.5 py-3.5">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#e7eef5] text-xs font-semibold text-[#5d6f86]">
+    <article className="flex items-center gap-3 rounded-[1.35rem] border border-border-soft bg-surface px-4 py-3.5">
+      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#eaf0f5] text-xs font-semibold text-[#5d6f86]">
         {getInitials(actor)}
       </div>
       <p className="text-sm leading-6 text-text-secondary">
@@ -524,13 +655,21 @@ export function FeedRow({ actor, action }: FeedRowProps) {
 
 export function ConcernCard({ title }: ConcernCardProps) {
   return (
-    <article className="flex items-center gap-3 rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4">
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-warning/20 text-[#a06d17]">
-        <AlertIcon />
-      </div>
-      <div>
-        <p className="text-sm text-text-secondary">Watching closely</p>
-        <p className="mt-1 text-base font-semibold text-text-primary">{title}</p>
+    <article className="rounded-[1.7rem] border border-[#ead9b8] bg-[linear-gradient(180deg,#fffaf0_0%,#fff7e8_100%)] px-4 py-4">
+      <div className="flex items-start gap-3">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-accent-warning/18 text-[#a06d17]">
+          <AlertIcon />
+        </div>
+        <div>
+          <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-[#9f7a36] uppercase">
+            Active concern
+          </p>
+          <p className="mt-2 text-base font-semibold text-text-primary">{title}</p>
+          <p className="mt-1 text-sm leading-6 text-text-secondary">
+            Stay attentive, but calm. This card is intentionally visible without
+            turning the screen into an alarm state.
+          </p>
+        </div>
       </div>
     </article>
   );
@@ -544,16 +683,16 @@ export function QuickActionButton({
   return (
     <button
       type="button"
-      className="flex items-start justify-center rounded-[var(--radius-card)] px-2 py-1 text-center transition hover:bg-surface-panel/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+      className="flex items-start justify-center rounded-[1.25rem] px-2 py-2 text-center transition hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
       aria-label={`${label} placeholder`}
     >
       <span className="flex flex-col items-center gap-2.5">
         <span
-          className={`flex h-14 w-14 items-center justify-center rounded-full ${quickActionToneClass(tone)}`}
+          className={`flex h-[3.75rem] w-[3.75rem] items-center justify-center rounded-full ${quickActionToneClass(tone)}`}
         >
           {icon}
         </span>
-        <span className="text-xs leading-4 font-medium text-text-primary">
+        <span className="max-w-[4.5rem] text-xs leading-4 font-medium text-text-primary">
           {label}
         </span>
       </span>
@@ -563,7 +702,7 @@ export function QuickActionButton({
 
 export function QuickActionsPanel() {
   return (
-    <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-3 py-4">
+    <section className="rounded-[1.8rem] border border-border-soft bg-surface px-3 py-4 shadow-[0_12px_24px_rgba(42,52,68,0.04)]">
       <div className="grid grid-cols-4 gap-2">
         <QuickActionButton
           label="Log by Voice"
@@ -592,14 +731,14 @@ export function PlaceholderTabScreen({
 }: PlaceholderTabScreenProps) {
   return (
     <section className="space-y-5">
-      <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
+      <section className="rounded-[var(--radius-surface)] border border-border-soft bg-surface px-4 py-4 sm:px-5">
         <p className="text-sm font-semibold text-text-primary">iPetzo shell</p>
         <p className="mt-2 text-sm leading-6 text-text-secondary">
           This area stays lightweight until that feature lane is ready.
         </p>
       </section>
 
-      <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-5 sm:px-5">
+      <section className="rounded-[var(--radius-surface)] border border-border-soft bg-surface px-4 py-5 sm:px-5">
         <p className="text-sm font-semibold text-text-secondary">{title}</p>
         <h1 className="mt-2 text-2xl font-bold tracking-tight text-text-primary">
           Placeholder shell
@@ -608,7 +747,7 @@ export function PlaceholderTabScreen({
           {description}
         </p>
 
-        <div className="mt-5 rounded-[var(--radius-card)] border border-border-subtle bg-surface-muted px-4 py-4">
+        <div className="mt-5 rounded-[var(--radius-card)] border border-border-soft bg-surface-muted px-4 py-4">
           <p className="text-sm font-semibold text-text-primary">
             This tab is intentionally shell-only.
           </p>
@@ -621,7 +760,7 @@ export function PlaceholderTabScreen({
 
         <Link
           href="/app"
-          className="mt-5 inline-flex items-center rounded-full border border-border-subtle bg-surface-panel px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+          className="mt-5 inline-flex items-center rounded-full border border-border-soft bg-surface-panel px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
         >
           Return to Today
         </Link>
