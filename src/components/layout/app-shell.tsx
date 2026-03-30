@@ -27,9 +27,9 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
   const canAddAnotherPet = petContext.petCount < MAX_PETS_PER_ACCOUNT;
 
   return (
-    <div className="min-h-screen bg-app-bg text-text-primary">
-      <div className="mx-auto flex min-h-screen w-full max-w-[32rem] flex-col px-3 pt-3 pb-0 sm:px-4 sm:pt-4">
-        <div className="flex min-h-screen flex-1 flex-col rounded-t-[2.25rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)]">
+    <div className="min-h-dvh bg-app-bg text-text-primary">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[32rem] flex-col px-2 pt-2 pb-0 sm:px-4 sm:pt-4">
+        <div className="flex min-h-0 flex-1 flex-col rounded-t-[1.75rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)] sm:rounded-t-[2.25rem]">
           <header className="px-4 pt-4 sm:px-5 sm:pt-5">
             <div className="flex items-center justify-between px-1">
               <Link
@@ -51,14 +51,14 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2 px-1">
                 <Link
                   href="/app/pet"
-                  className="inline-flex items-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                  className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-center text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                 >
                   Open {currentPet.name}&rsquo;s profile
                 </Link>
                 {canAddAnotherPet ? (
                   <Link
                     href="/app/pets/new"
-                    className="inline-flex items-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                    className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3.5 py-2 text-center text-xs font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
                   >
                     Add pet
                   </Link>
@@ -70,7 +70,9 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
             </span>
           </header>
 
-          <main className="flex-1 px-4 pt-5 pb-4 sm:px-5 sm:pt-6">{children}</main>
+          <main className="flex-1 px-4 pt-5 pb-[calc(6.5rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-6 sm:pb-[calc(7rem+env(safe-area-inset-bottom))]">
+            {children}
+          </main>
           <AppShellNav />
         </div>
       </div>

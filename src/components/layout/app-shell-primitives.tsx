@@ -537,14 +537,14 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
   return (
     <section className="overflow-hidden rounded-[2rem] border border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6f1e9_100%)] px-5 py-5 shadow-[0_16px_32px_rgba(40,50,66,0.06)]">
       <div className="flex flex-col items-center text-center">
-        <span className="inline-flex items-center rounded-full bg-white/85 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+        <span className="inline-flex max-w-full items-center rounded-full bg-white/85 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
           Today with {pet.name}
         </span>
         <div className="mt-4 flex h-24 w-24 items-center justify-center rounded-full bg-[radial-gradient(circle_at_top,#f7e8cf,#e8cda6_70%)] text-[1.7rem] font-bold tracking-tight text-text-primary shadow-[inset_0_1px_0_rgba(255,255,255,0.7)]">
           {getInitials(pet.name)}
         </div>
         <div className="mt-4 min-w-0">
-          <h1 className="text-[2.15rem] leading-none font-bold tracking-tight text-text-primary">
+          <h1 className="break-words text-[1.9rem] leading-none font-bold tracking-tight text-text-primary min-[380px]:text-[2.15rem]">
             {pet.name}
           </h1>
           <p className="mt-3 max-w-[18rem] text-sm leading-6 text-text-secondary">
@@ -552,12 +552,12 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
             watch items lives here.
           </p>
         </div>
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-4 flex max-w-full flex-wrap items-center justify-center gap-2">
           <PetSpeciesBadge species={pet.species} />
           {detailChips.slice(1).map((chip) => (
             <span
               key={chip}
-              className="inline-flex items-center rounded-full border border-border-soft bg-white/80 px-3 py-1 text-xs font-semibold text-text-secondary"
+              className="inline-flex max-w-full items-center rounded-full border border-border-soft bg-white/80 px-3 py-1 text-center text-xs font-semibold text-text-secondary"
             >
               {chip}
             </span>
@@ -565,7 +565,7 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
         </div>
       </div>
 
-      <div className="mt-5 grid grid-cols-2 gap-3">
+      <div className="mt-5 grid grid-cols-1 gap-3 min-[380px]:grid-cols-2">
         <div className="rounded-[1.4rem] border border-border-soft bg-white/78 px-4 py-3.5 text-left">
           <p className="text-[0.68rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
             Care record
@@ -703,7 +703,7 @@ export function QuickActionButton({
 export function QuickActionsPanel() {
   return (
     <section className="rounded-[1.8rem] border border-border-soft bg-surface px-3 py-4 shadow-[0_12px_24px_rgba(42,52,68,0.04)]">
-      <div className="grid grid-cols-4 gap-2">
+      <div className="grid grid-cols-2 gap-2 min-[400px]:grid-cols-4">
         <QuickActionButton
           label="Log by Voice"
           tone="blue"
