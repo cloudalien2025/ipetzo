@@ -1,5 +1,8 @@
 import Link from "next/link";
 
+import type { PetSpecies } from "@/generated/prisma/client";
+import type { PetSummary } from "@/server/services/pets";
+
 type IconProps = {
   className?: string;
 };
@@ -45,6 +48,26 @@ function getInitials(name: string): string {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+}
+
+function formatPetSpecies(species: PetSpecies): string {
+  if (species === "DOG") {
+    return "Dog";
+  }
+
+  if (species === "CAT") {
+    return "Cat";
+  }
+
+  return "Pet";
+}
+
+function formatWeight(pet: PetSummary): string | null {
+  if (!pet.weightValue) {
+    return null;
+  }
+
+  return `${pet.weightValue.toString()} ${pet.weightUnit ?? "lb"}`;
 }
 
 function quickActionToneClass(tone: QuickActionButtonProps["tone"]): string {
@@ -358,16 +381,15 @@ export function PatternsIcon({ className }: IconProps) {
   );
 }
 
-export function PetSelector() {
+export function PetSelector({ pet }: { pet: PetSummary | null }) {
   return (
-    <button
-      type="button"
+    <div
       className="flex w-full items-center justify-center gap-3 rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-3.5 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
-      aria-label="Select pet"
+      aria-label={pet ? `Current pet ${pet.name}` : "No pets yet"}
     >
-      <span>Buddy</span>
+      <span>{pet ? pet.name : "No pets yet"}</span>
       <ChevronUpDownIcon className="h-4 w-4 text-text-secondary" />
-    </button>
+    </div>
   );
 }
 
@@ -379,22 +401,50 @@ export function StatusPill({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function PetHeader() {
+export function PetHeader({ pet }: { pet: PetSummary }) {
+  const speciesLabel = formatPetSpecies(pet.species);
+
   return (
     <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex h-[3.75rem] w-[3.75rem] shrink-0 items-center justify-center rounded-full bg-[#eadbc9] text-lg font-semibold text-text-primary sm:h-16 sm:w-16">
-          B
+          {getInitials(pet.name)}
         </div>
         <div className="min-w-0">
           <p className="text-[1.55rem] leading-tight font-bold tracking-tight text-text-primary">
-            Monitoring
+            {pet.name}
           </p>
           <div className="mt-2">
-            <StatusPill>Monitoring</StatusPill>
+            <StatusPill>{speciesLabel}</StatusPill>
           </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+export function EmptyPetOverview({ pet }: { pet: PetSummary }) {
+  const facts = [
+    pet.breed,
+    pet.sex,
+    pet.birthDate
+      ? new Intl.DateTimeFormat("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        }).format(pet.birthDate)
+      : null,
+    formatWeight(pet),
+  ].filter(Boolean);
+
+  return (
+    <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
+      <p className="text-sm font-semibold text-text-primary">Care record started</p>
+      <p className="mt-2 text-sm leading-6 text-text-secondary">
+        {facts.length > 0
+          ? `${pet.name} is now part of your iPetzo account. ${facts.join(" • ")}`
+          : `${pet.name} is now part of your iPetzo account.`}
+      </p>
     </section>
   );
 }
@@ -507,7 +557,12 @@ export function PlaceholderTabScreen({
 }: PlaceholderTabScreenProps) {
   return (
     <section className="space-y-5">
-      <PetHeader />
+      <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-4 sm:px-5">
+        <p className="text-sm font-semibold text-text-primary">iPetzo shell</p>
+        <p className="mt-2 text-sm leading-6 text-text-secondary">
+          This area stays lightweight until that feature lane is ready.
+        </p>
+      </section>
 
       <section className="rounded-[var(--radius-surface)] border border-border-subtle bg-surface px-4 py-5 sm:px-5">
         <p className="text-sm font-semibold text-text-secondary">{title}</p>
