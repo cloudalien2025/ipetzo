@@ -12,6 +12,8 @@ import {
   PetSelector,
   PetSpeciesBadge,
 } from "@/components/layout/app-shell-primitives";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import type { AuthenticatedPetContext } from "@/server/services/pets";
 
 const initialState: SwitchCurrentPetFormState = {
@@ -46,32 +48,35 @@ function SwitchPetButton({
   const { pending } = useFormStatus();
 
   return (
-    <button
-      type="submit"
-      disabled={pending || isCurrent}
-      className="flex w-full items-center justify-between gap-3 rounded-[1rem] border border-border-soft bg-surface px-3.5 py-3 text-left transition hover:border-nav-active/35 hover:bg-surface-soft disabled:cursor-default disabled:opacity-100"
-    >
-      <span className="min-w-0">
-        <span className="block truncate text-sm font-semibold text-text-primary">{name}</span>
-        <span className="mt-0.5 block text-[0.72rem] font-medium text-text-secondary">
-          {speciesLabel}
+    <>
+      <Button
+        type="submit"
+        disabled={pending || isCurrent}
+        variant="outline"
+        className="flex h-auto w-full items-center justify-between gap-3 rounded-[1rem] border-border-soft bg-surface px-3.5 py-3 text-left text-inherit shadow-none transition hover:border-nav-active/35 hover:bg-surface-soft disabled:cursor-default disabled:opacity-100"
+      >
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold text-text-primary">{name}</span>
+          <span className="mt-0.5 block text-[0.72rem] font-medium text-text-secondary">
+            {speciesLabel}
+          </span>
         </span>
-      </span>
-      <span className="flex shrink-0 items-center gap-2 text-[0.72rem] font-semibold text-text-secondary">
-        {isCurrent ? (
-          <>
-            <CheckIcon className="h-4 w-4 text-nav-active" />
-            Current
-          </>
-        ) : pending ? (
-          "Switching..."
-        ) : (
-          "Switch"
-        )}
-      </span>
+        <span className="flex shrink-0 items-center gap-2 text-[0.72rem] font-semibold text-text-secondary">
+          {isCurrent ? (
+            <>
+              <CheckIcon className="h-4 w-4 text-nav-active" />
+              Current
+            </>
+          ) : pending ? (
+            "Switching..."
+          ) : (
+            "Switch"
+          )}
+        </span>
+      </Button>
       <input type="hidden" name="petId" value={petId} />
       <input type="hidden" name="returnTo" value={returnTo} />
-    </button>
+    </>
   );
 }
 
@@ -102,7 +107,7 @@ export function CurrentPetSwitcher({ petContext }: { petContext: AuthenticatedPe
         />
       </summary>
 
-      <div className="absolute inset-x-0 top-[calc(100%+0.55rem)] z-20 rounded-[1.35rem] border border-border-soft bg-[#fbf8f3] p-2.5 shadow-[0_20px_36px_rgba(42,52,68,0.14)]">
+      <Card className="absolute inset-x-0 top-[calc(100%+0.55rem)] z-20 gap-0 rounded-[1.35rem] border-border-soft bg-[#fbf8f3] p-2.5 shadow-[0_20px_36px_rgba(42,52,68,0.14)]">
         <div className="flex items-center justify-between gap-3 px-1.5 pb-2.5">
           <div>
             <p className="text-sm font-semibold text-text-primary">Switch current pet</p>
@@ -132,7 +137,7 @@ export function CurrentPetSwitcher({ petContext }: { petContext: AuthenticatedPe
             {state.error}
           </p>
         ) : null}
-      </div>
+      </Card>
     </details>
   );
 }

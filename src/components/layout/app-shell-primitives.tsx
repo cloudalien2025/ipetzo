@@ -1,5 +1,10 @@
 import Link from "next/link";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import type { PetSpecies } from "@/generated/prisma/client";
 import type { PetSummary } from "@/server/services/pets";
 
@@ -54,6 +59,20 @@ function getInitials(name: string): string {
     .join("")
     .slice(0, 2)
     .toUpperCase();
+}
+
+function getPetImageSrc(pet: PetSummary | null): string | null {
+  if (!pet) {
+    return null;
+  }
+
+  const imagePet = pet as PetSummary & {
+    imageUrl?: string | null;
+    avatarUrl?: string | null;
+    photoUrl?: string | null;
+  };
+
+  return imagePet.imageUrl ?? imagePet.avatarUrl ?? imagePet.photoUrl ?? null;
 }
 
 function getPetFallbackTone(species?: PetSpecies | null): string {
@@ -537,25 +556,43 @@ export function PetAvatar({ pet, size = "md" }: PetAvatarProps) {
 
   const iconClassNameOverride =
     size === "sm" ? "h-[1.1rem] w-[1.1rem]" : size === "lg" ? "h-8 w-8" : "h-6 w-6";
+  const imageSrc = getPetImageSrc(pet);
   const fallbackLabel = getPetFallbackLabel(pet?.species);
   const initials = pet ? getInitials(pet.name) : "IP";
 
   return (
-    <span
-      className={`relative flex shrink-0 items-center justify-center overflow-hidden rounded-full ring-1 ring-white/70 shadow-[0_10px_24px_rgba(42,52,68,0.12)] ${sizeClassName} ${getPetFallbackTone(pet?.species)}`}
-      aria-hidden="true"
-    >
-      {pet?.species === "DOG" ? (
-        <DogIcon className={iconClassNameOverride} />
-      ) : pet?.species === "CAT" ? (
-        <CatIcon className={iconClassNameOverride} />
-      ) : (
-        <span className="text-[0.72rem] font-bold tracking-[0.16em] uppercase">
-          {initials}
-        </span>
+    <Avatar
+      size={size === "md" ? "default" : size}
+      className={cn(
+        "ring-1 ring-white/70 shadow-[0_10px_24px_rgba(42,52,68,0.12)]",
+        sizeClassName,
+        getPetFallbackTone(pet?.species),
       )}
-      <span className="sr-only">{pet ? `${pet.name} portrait` : `${fallbackLabel} portrait`}</span>
-    </span>
+    >
+      {imageSrc ? (
+        <AvatarImage
+          src={imageSrc}
+          alt={pet ? `${pet.name} portrait` : `${fallbackLabel} portrait`}
+          className="object-cover"
+        />
+      ) : null}
+      <AvatarFallback
+        className={cn(
+          "bg-transparent font-semibold text-inherit",
+          !imageSrc && pet?.species !== "DOG" && pet?.species !== "CAT"
+            ? "text-[0.72rem] tracking-[0.16em] uppercase"
+            : "",
+        )}
+      >
+        {pet?.species === "DOG" ? (
+          <DogIcon className={iconClassNameOverride} />
+        ) : pet?.species === "CAT" ? (
+          <CatIcon className={iconClassNameOverride} />
+        ) : (
+          initials
+        )}
+      </AvatarFallback>
+    </Avatar>
   );
 }
 
@@ -613,9 +650,9 @@ export function PetSelector({
 
 export function StatusPill({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-flex w-fit items-center rounded-full bg-accent-monitoring/18 px-3 py-1 text-[0.72rem] font-semibold text-[#8d5c25] ring-1 ring-inset ring-[#ebc789]/45">
+    <Badge className="inline-flex w-fit rounded-full border-0 bg-accent-monitoring/18 px-3 py-1 text-[0.72rem] font-semibold text-[#8d5c25] ring-1 ring-inset ring-[#ebc789]/45">
       {children}
-    </span>
+    </Badge>
   );
 }
 
@@ -628,7 +665,7 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
   ].filter(Boolean);
 
   return (
-    <section className="rounded-[1.6rem] border border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6efe3_100%)] px-4 py-4 shadow-[0_14px_30px_rgba(40,50,66,0.06)]">
+    <Card className="gap-0 rounded-[1.6rem] border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6efe3_100%)] px-4 py-4 shadow-[0_14px_30px_rgba(40,50,66,0.06)]">
       <div className="flex items-center gap-3.5">
         <PetAvatar pet={pet} size="lg" />
         <div className="min-w-0 flex-1">
@@ -643,7 +680,7 @@ export function PetHeader({ pet }: { pet: PetSummary }) {
           </div>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -656,7 +693,7 @@ export function EmptyPetOverview({ pet }: { pet: PetSummary }) {
   ].filter(Boolean);
 
   return (
-    <section className="rounded-[1.7rem] border border-border-soft bg-surface px-4 py-4 sm:px-5">
+    <Card className="gap-0 rounded-[1.7rem] border-border-soft bg-surface px-4 py-4 sm:px-5">
       <p className="text-[0.72rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
         Pet overview
       </p>
@@ -665,7 +702,7 @@ export function EmptyPetOverview({ pet }: { pet: PetSummary }) {
           ? `${pet.name}'s profile is grounded with ${facts.join(" • ")}.`
           : `${pet.name} is part of your iPetzo account and ready for care tracking.`}
       </p>
-    </section>
+    </Card>
   );
 }
 
@@ -684,7 +721,7 @@ export function SectionHeader({ title, eyebrow }: SectionHeaderProps) {
 
 export function TaskCard({ icon, title, detail }: TaskCardProps) {
   return (
-    <article className="rounded-[1.15rem] border border-border-soft bg-surface px-3.5 py-3 shadow-[0_8px_18px_rgba(42,52,68,0.04)]">
+    <Card className="gap-0 rounded-[1.15rem] border-border-soft bg-surface px-3.5 py-3 shadow-[0_8px_18px_rgba(42,52,68,0.04)]">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef3fb] text-[#5671a0]">
           {icon}
@@ -694,13 +731,13 @@ export function TaskCard({ icon, title, detail }: TaskCardProps) {
           <p className="mt-0.5 text-[0.72rem] font-medium text-text-secondary">{detail}</p>
         </div>
       </div>
-    </article>
+    </Card>
   );
 }
 
 export function FeedRow({ actor, action }: FeedRowProps) {
   return (
-    <article className="flex items-center gap-3 rounded-[1.15rem] border border-border-soft bg-surface px-3.5 py-3">
+    <Card className="flex-row items-center gap-3 rounded-[1.15rem] border-border-soft bg-surface px-3.5 py-3">
       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eaf0f5] text-xs font-semibold text-[#5d6f86]">
         {getInitials(actor)}
       </div>
@@ -708,13 +745,13 @@ export function FeedRow({ actor, action }: FeedRowProps) {
         <span className="font-semibold text-text-primary">{actor}</span>{" "}
         {action}
       </p>
-    </article>
+    </Card>
   );
 }
 
 export function ConcernCard({ title }: ConcernCardProps) {
   return (
-    <article className="rounded-[1.25rem] border border-[#ead9b8] bg-[linear-gradient(180deg,#fffaf0_0%,#fff7e8_100%)] px-3.5 py-3.5">
+    <Card className="gap-0 rounded-[1.25rem] border-[#ead9b8] bg-[linear-gradient(180deg,#fffaf0_0%,#fff7e8_100%)] px-3.5 py-3.5">
       <div className="flex items-start gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-warning/18 text-[#a06d17]">
           <AlertIcon />
@@ -729,7 +766,7 @@ export function ConcernCard({ title }: ConcernCardProps) {
           </p>
         </div>
       </div>
-    </article>
+    </Card>
   );
 }
 
@@ -739,9 +776,10 @@ export function QuickActionButton({
   icon,
 }: QuickActionButtonProps) {
   return (
-    <button
+    <Button
       type="button"
-      className="flex items-start justify-center rounded-[1rem] border border-border-soft/70 bg-white/78 px-2 py-2.5 text-center transition hover:bg-surface-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+      variant="outline"
+      className="flex h-auto items-start justify-center rounded-[1rem] border-border-soft/70 bg-white/78 px-2 py-2.5 text-center text-inherit shadow-none hover:bg-surface-soft focus-visible:ring-focus-ring focus-visible:ring-offset-surface"
       aria-label={`${label} placeholder`}
     >
       <span className="flex flex-col items-center gap-2">
@@ -754,13 +792,13 @@ export function QuickActionButton({
           {label}
         </span>
       </span>
-    </button>
+    </Button>
   );
 }
 
 export function QuickActionsPanel() {
   return (
-    <section className="rounded-[1.25rem] border border-border-soft bg-surface px-2.5 py-2.5 shadow-[0_10px_22px_rgba(42,52,68,0.04)]">
+    <Card className="gap-0 rounded-[1.25rem] border-border-soft bg-surface px-2.5 py-2.5 shadow-[0_10px_22px_rgba(42,52,68,0.04)]">
       <div className="grid grid-cols-2 gap-2 min-[400px]:grid-cols-4">
         <QuickActionButton
           label="Voice"
@@ -779,7 +817,7 @@ export function QuickActionsPanel() {
         />
         <QuickActionButton label="Note" tone="red" icon={<NoteIcon />} />
       </div>
-    </section>
+    </Card>
   );
 }
 
@@ -789,7 +827,7 @@ export function PlaceholderTabScreen({
 }: PlaceholderTabScreenProps) {
   return (
     <section className="space-y-3.5">
-      <section className="rounded-[1.25rem] border border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6efe4_100%)] px-4 py-3.5">
+      <Card className="gap-0 rounded-[1.25rem] border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6efe4_100%)] px-4 py-3.5">
         <p className="text-[0.63rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
           {title}
         </p>
@@ -799,10 +837,10 @@ export function PlaceholderTabScreen({
         <p className="mt-2 text-[0.88rem] leading-5 text-text-secondary">
           {description}
         </p>
-      </section>
+      </Card>
 
-      <section className="rounded-[1.25rem] border border-border-soft bg-surface px-4 py-4">
-        <div className="rounded-[1rem] border border-border-soft bg-surface-muted px-3.5 py-3.5">
+      <Card className="gap-0 rounded-[1.25rem] border-border-soft bg-surface px-4 py-4">
+        <Card className="gap-0 rounded-[1rem] border-border-soft bg-surface-muted px-3.5 py-3.5 shadow-none">
           <p className="text-sm font-semibold text-text-primary">
             Shell continuity is in place.
           </p>
@@ -810,15 +848,16 @@ export function PlaceholderTabScreen({
             Routing, spacing, and the compact frame are already aligned with Today, so
             product-specific content can land here without another shell rewrite.
           </p>
-        </div>
+        </Card>
 
-        <Link
-          href="/app"
-          className="mt-4 inline-flex items-center rounded-full border border-border-soft bg-surface-panel px-4 py-2 text-sm font-semibold text-text-primary transition hover:border-nav-active/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
+        <Button
+          asChild
+          variant="outline"
+          className="mt-4 inline-flex rounded-full border-border-soft bg-surface-panel px-4 py-2 text-sm font-semibold text-text-primary shadow-none hover:border-nav-active/45 hover:bg-surface-panel"
         >
-          Return to Today
-        </Link>
-      </section>
+          <Link href="/app">Return to Today</Link>
+        </Button>
+      </Card>
     </section>
   );
 }

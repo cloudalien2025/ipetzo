@@ -5,6 +5,7 @@ import type { AppUser } from "@/generated/prisma/client";
 import { AppShellNav } from "@/components/layout/app-shell-nav";
 import { CurrentPetSwitcher } from "@/components/layout/current-pet-switcher";
 import { SparkIcon } from "@/components/layout/app-shell-primitives";
+import { Button } from "@/components/ui/button";
 import { MAX_PETS_PER_ACCOUNT } from "@/server/services/pets";
 import type { AuthenticatedPetContext } from "@/server/services/pets";
 
@@ -42,13 +43,16 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
                 <span>iPetzo</span>
               </Link>
               {canAddAnotherPet ? (
-                <Link
-                  href="/app/pets/new"
-                  aria-label="Add pet"
-                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border-soft bg-surface/82 text-text-secondary transition hover:border-nav-active/35 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                <Button
+                  asChild
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9 shrink-0 rounded-full border-border-soft bg-surface/82 text-text-secondary shadow-none hover:border-nav-active/35 hover:bg-surface/82 hover:text-nav-active focus-visible:ring-focus-ring focus-visible:ring-offset-app-bg"
                 >
-                  <span className="text-lg leading-none">+</span>
-                </Link>
+                  <Link href="/app/pets/new" aria-label="Add pet">
+                    <span className="text-lg leading-none">+</span>
+                  </Link>
+                </Button>
               ) : (
                 <span className="text-[0.68rem] font-medium tracking-[0.18em] text-text-muted uppercase">
                   {petContext.currentPet ? "Care Today" : "Welcome"}
@@ -63,12 +67,14 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
                 <p className="truncate pr-3 text-[0.75rem] font-medium text-text-secondary">
                   {petContext.currentPet.name}&rsquo;s command center
                 </p>
-                <Link
-                  href="/app/pet"
-                  className="inline-flex max-w-full items-center justify-center rounded-full border border-border-soft bg-surface/90 px-3 py-1.5 text-center text-[0.72rem] font-semibold tracking-tight text-text-primary transition hover:border-nav-active/40 hover:text-nav-active focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg"
+                <Button
+                  asChild
+                  variant="outline"
+                  size="sm"
+                  className="max-w-full rounded-full border-border-soft bg-surface/90 px-3 py-1.5 text-[0.72rem] font-semibold tracking-tight text-text-primary shadow-none hover:border-nav-active/40 hover:bg-surface/90 hover:text-nav-active focus-visible:ring-focus-ring focus-visible:ring-offset-app-bg"
                 >
-                  Profile
-                </Link>
+                  <Link href="/app/pet">Profile</Link>
+                </Button>
               </div>
             ) : null}
             <span className="sr-only">
