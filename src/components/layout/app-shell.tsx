@@ -29,9 +29,9 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
 
   return (
     <div className="min-h-dvh bg-app-bg text-text-primary">
-      <div className="mx-auto flex min-h-dvh w-full max-w-[38rem] flex-col px-2 pt-2 pb-0 sm:px-4 sm:pt-4">
+      <div className="mx-auto flex min-h-dvh w-full max-w-[38rem] flex-col px-2 pt-1.5 pb-0 sm:px-4 sm:pt-4">
         <div className="flex min-h-0 flex-1 flex-col rounded-t-[1.75rem] border border-b-0 border-border-soft bg-app-shell shadow-[var(--shadow-soft)] sm:rounded-t-[2rem]">
-          <header className="px-3.5 pt-3.5 sm:px-5 sm:pt-4">
+          <header className="px-3.5 pt-3 sm:px-5 sm:pt-4">
             <div className="flex items-center justify-between gap-3">
               <Link
                 href="/app"
@@ -59,11 +59,11 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
                 </span>
               )}
             </div>
-            <div className="mt-3">
+            <div className="mt-2.5">
               <CurrentPetSwitcher petContext={petContext} />
             </div>
             {petContext.currentPet ? (
-              <div className="mt-2 flex items-center justify-between px-1">
+              <div className="mt-1.5 flex items-center justify-between px-0.5">
                 <p className="truncate pr-3 text-[0.75rem] font-medium text-text-secondary">
                   {petContext.currentPet.name}&rsquo;s command center
                 </p>
@@ -82,7 +82,7 @@ export function AppShell({ appUser, petContext, children }: AppShellProps) {
             </span>
           </header>
 
-          <main className="flex-1 px-3.5 pt-3.5 pb-[calc(5.75rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-4 sm:pb-[calc(6rem+env(safe-area-inset-bottom))]">
+          <main className="flex-1 px-3.5 pt-2.5 pb-[calc(5.35rem+env(safe-area-inset-bottom))] sm:px-5 sm:pt-4 sm:pb-[calc(6rem+env(safe-area-inset-bottom))]">
             {children}
           </main>
           <AppShellNav />

@@ -14,7 +14,7 @@ import { getAuthenticatedPetContext } from "@/server/services/pets";
 
 const dueNowItems = [
   {
-    title: "Dinner Due",
+    title: "Dinner",
     detail: "6:00 PM",
     icon: <BowlIcon />,
   },
@@ -24,7 +24,7 @@ const dueNowItems = [
     icon: <CapsuleIcon />,
   },
   {
-    title: "Give Ears Meds",
+    title: "Ear meds",
     detail: "Tomorrow",
     icon: <DropIcon />,
   },
@@ -65,21 +65,12 @@ export default async function AppHomePage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       <PetHeader pet={petContext.currentPet} />
 
-      <section className="rounded-[1.15rem] border border-[#d8e2f3] bg-[linear-gradient(180deg,#f7faff_0%,#eef4fb_100%)] px-3.5 py-3">
-        <p className="text-[0.82rem] font-semibold text-[#41618f]">
-          {petContext.currentPet.name} is on track today.
-        </p>
-        <p className="mt-1 text-[0.8rem] leading-5 text-text-secondary">
-          Next item: Dinner at 6:00 PM.
-        </p>
-      </section>
-
-      <section className="space-y-2.5">
-        <SectionHeader title="Due Now" eyebrow="What matters now" />
-        <div className="grid grid-cols-1 gap-2 min-[420px]:grid-cols-3">
+      <section className="space-y-2">
+        <SectionHeader title="Due Now" eyebrow="What matters now" actionLabel="View all" />
+        <div className="grid grid-cols-3 gap-2">
           {dueNowItems.map((item) => (
             <TaskCard
               key={item.title}
@@ -91,19 +82,9 @@ export default async function AppHomePage() {
         </div>
       </section>
 
-      <section className="space-y-2.5">
-        <SectionHeader title="Watch Item" eyebrow="Monitor calmly" />
-        <ConcernCard title="Ear Infection Recovery Day 2" />
-      </section>
-
-      <section className="space-y-2.5">
-        <SectionHeader title="Quick Actions" eyebrow="Log something fast" />
-        <QuickActionsPanel />
-      </section>
-
-      <section className="space-y-2.5">
-        <SectionHeader title="Village Feed" eyebrow="Care stream" />
-        <div className="space-y-2">
+      <section className="space-y-2">
+        <SectionHeader title="Village Feed" eyebrow="Recent care" actionLabel="Village" />
+        <div className="space-y-1.5">
           {villageFeedItems.map((item) => (
             <FeedRow
               key={`${item.actor}-${item.action}`}
@@ -112,6 +93,16 @@ export default async function AppHomePage() {
             />
           ))}
         </div>
+      </section>
+
+      <section className="space-y-2">
+        <SectionHeader title="Active Concern" eyebrow="Monitor calmly" />
+        <ConcernCard title="Ear Infection Recovery Day 2" />
+      </section>
+
+      <section className="space-y-2">
+        <SectionHeader title="Quick Actions" eyebrow="Log something fast" />
+        <QuickActionsPanel />
       </section>
     </div>
   );
