@@ -17,6 +17,7 @@ export type PetSummary = Pick<
   | "birthDate"
   | "weightValue"
   | "weightUnit"
+  | "photoUrl"
   | "createdAt"
 >;
 
@@ -34,6 +35,7 @@ export type CreatePetInput = {
   birthDate: Date | null;
   weightValue: number | null;
   weightUnit: string | null;
+  photoUrl: string | null;
 };
 
 export type CreatePetForCurrentUserResult =
@@ -80,6 +82,7 @@ export async function getAuthenticatedPetContext(): Promise<AuthenticatedPetCont
       birthDate: true,
       weightValue: true,
       weightUnit: true,
+      photoUrl: true,
       createdAt: true,
     },
   });
@@ -90,6 +93,21 @@ export async function getAuthenticatedPetContext(): Promise<AuthenticatedPetCont
     currentPet,
     pets,
   };
+}
+
+function isCurrentPetSelectionSchemaError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) {
+    return false;
+  }
+
+  const code = "code" in error ? error.code : null;
+  const message = "message" in error && typeof error.message === "string" ? error.message : "";
+
+  if (code === "P2022" && message.includes("current_pet_id")) {
+    return true;
+  }
+
+  return message.includes("current_pet_id") && message.toLowerCase().includes("column");
 }
 
 export async function createPetForCurrentUser(
@@ -107,7 +125,7 @@ export async function createPetForCurrentUser(
 
   const prisma = getPrismaClient();
 
-  return prisma.$transaction(async (tx) => {
+  const creationResult = await prisma.$transaction(async (tx) => {
     await tx.$queryRaw`SELECT id FROM app_users WHERE id = ${appUser.id} FOR UPDATE`;
 
     const petCount = await tx.pet.count({
@@ -133,6 +151,7 @@ export async function createPetForCurrentUser(
         birthDate: input.birthDate,
         weightValue: input.weightValue,
         weightUnit: input.weightUnit,
+        photoUrl: input.photoUrl,
       },
       select: {
         id: true,
@@ -143,16 +162,8 @@ export async function createPetForCurrentUser(
         birthDate: true,
         weightValue: true,
         weightUnit: true,
+        photoUrl: true,
         createdAt: true,
-      },
-    });
-
-    await tx.appUser.update({
-      where: {
-        id: appUser.id,
-      },
-      data: {
-        currentPetId: pet.id,
       },
     });
 
@@ -161,6 +172,32 @@ export async function createPetForCurrentUser(
       pet,
     };
   });
+
+  if (creationResult.status !== "created") {
+    return creationResult;
+  }
+
+  try {
+    await prisma.appUser.update({
+      where: {
+        id: appUser.id,
+      },
+      data: {
+        currentPetId: creationResult.pet.id,
+      },
+    });
+  } catch (error) {
+    if (!isCurrentPetSelectionSchemaError(error)) {
+      throw error;
+    }
+
+    console.warn(
+      "Created a pet, but skipped current pet assignment because app_users.current_pet_id is unavailable.",
+      error,
+    );
+  }
+
+  return creationResult;
 }
 
 export async function setCurrentPetForCurrentUser(petId: string): Promise<PetSummary> {
@@ -189,6 +226,7 @@ export async function setCurrentPetForCurrentUser(petId: string): Promise<PetSum
       birthDate: true,
       weightValue: true,
       weightUnit: true,
+      photoUrl: true,
       createdAt: true,
     },
   });
