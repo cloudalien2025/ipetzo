@@ -27,6 +27,30 @@ function getOptionalString(formData: FormData, key: string): string | null {
   return value ? value : null;
 }
 
+function getOptionalUrl(formData: FormData, key: string): string | null {
+  const value = getOptionalString(formData, key);
+
+  if (!value) {
+    return null;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
+    return null;
+  }
+}
+
+function hasInvalidOptionalUrl(formData: FormData, key: string): boolean {
+  return Boolean(getTrimmedString(formData, key)) && getOptionalUrl(formData, key) === null;
+}
+
 function getPetSpecies(formData: FormData): PetSpecies | null {
   const value = getTrimmedString(formData, "species");
 
@@ -97,6 +121,12 @@ export async function createPetAction(
     };
   }
 
+  if (hasInvalidOptionalUrl(formData, "photoUrl")) {
+    return {
+      error: "Enter a valid photo URL or leave it blank for now.",
+    };
+  }
+
   try {
     const result = await createPetForCurrentUser({
       name,
@@ -106,6 +136,7 @@ export async function createPetAction(
       birthDate: getBirthDate(formData),
       weightValue,
       weightUnit: weightValue ? getOptionalString(formData, "weightUnit") ?? "lb" : null,
+      photoUrl: getOptionalUrl(formData, "photoUrl"),
     });
 
     if (result.status === "limit_reached") {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import type { CreatePetFormState } from "@/app/(app)/app/pets/new/actions";
@@ -26,9 +26,47 @@ function SubmitButton() {
 
 export function PetCreateForm() {
   const [state, formAction] = useActionState(createPetAction, initialState);
+  const [photoUrlPreview, setPhotoUrlPreview] = useState("");
 
   return (
     <form action={formAction} className="space-y-4">
+      <div className="space-y-3 rounded-[1.6rem] border border-slate-200 bg-slate-50/80 p-4">
+        <div className="space-y-1">
+          <label htmlFor="photoUrl" className="text-sm font-medium text-slate-900">
+            Pet photo
+          </label>
+          <p className="text-sm leading-6 text-slate-600">
+            Optional. Paste an image URL now, or skip it and add a photo later.
+          </p>
+        </div>
+
+        <input
+          id="photoUrl"
+          name="photoUrl"
+          type="url"
+          inputMode="url"
+          autoComplete="url"
+          className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-emerald-700 focus:ring-2 focus:ring-emerald-200"
+          placeholder="https://example.com/pet-photo.jpg"
+          onChange={(event) => {
+            setPhotoUrlPreview(event.currentTarget.value.trim());
+          }}
+        />
+
+        {photoUrlPreview ? (
+          <div className="overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white">
+            <img
+              src={photoUrlPreview}
+              alt="Pet photo preview"
+              className="h-40 w-full object-cover"
+              onError={() => {
+                setPhotoUrlPreview("");
+              }}
+            />
+          </div>
+        ) : null}
+      </div>
+
       <div className="space-y-2">
         <label htmlFor="name" className="text-sm font-medium text-slate-900">
           Pet name
