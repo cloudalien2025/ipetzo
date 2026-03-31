@@ -15,6 +15,7 @@ type IconProps = {
 type SectionHeaderProps = {
   title: string;
   eyebrow?: string;
+  actionLabel?: string;
 };
 
 type TaskCardProps = {
@@ -551,7 +552,7 @@ export function PetAvatar({ pet, size = "md" }: PetAvatarProps) {
     size === "sm"
       ? "h-10 w-10"
       : size === "lg"
-        ? "h-18 w-18 min-[400px]:h-20 min-[400px]:w-20"
+        ? "h-18 w-18 min-[400px]:h-[4.75rem] min-[400px]:w-[4.75rem]"
         : "h-14 w-14";
 
   const iconClassNameOverride =
@@ -609,7 +610,7 @@ export function PetSelector({
 
   return (
     <div
-      className={`flex w-full items-center justify-between gap-3 rounded-full border border-border-soft bg-surface/92 px-3 py-2.5 text-left text-sm font-semibold text-text-primary shadow-[0_8px_22px_rgba(42,52,68,0.04)] transition ${
+      className={`flex w-full items-center justify-between gap-2.5 rounded-[1.05rem] border border-border-soft bg-surface/94 px-2.5 py-2 text-left text-sm font-semibold text-text-primary shadow-[0_8px_18px_rgba(42,52,68,0.04)] transition ${
         interactive ? "cursor-pointer hover:border-nav-active/35 hover:bg-surface-soft" : ""
       } focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-focus-ring focus-visible:ring-offset-2 focus-visible:ring-offset-app-bg`}
       aria-label={pet ? `Current pet ${pet.name}` : "No pets yet"}
@@ -620,10 +621,10 @@ export function PetSelector({
           <span className="block text-[0.62rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
             Pet
           </span>
-          <span className="mt-0.5 block truncate text-[0.95rem] font-semibold tracking-tight">
+          <span className="mt-0.5 block truncate text-[0.92rem] font-semibold tracking-tight">
             {pet ? pet.name : "No pets yet"}
           </span>
-          <span className="mt-1 flex flex-wrap items-center gap-1.5">
+          <span className="mt-0.5 flex flex-wrap items-center gap-1.5">
             {petMeta.length > 0 ? (
               <span className="truncate text-[0.72rem] font-medium text-text-secondary">
                 {petMeta.join(" • ")}
@@ -650,7 +651,7 @@ export function PetSelector({
 
 export function StatusPill({ children }: { children: React.ReactNode }) {
   return (
-    <Badge className="inline-flex w-fit rounded-full border-0 bg-accent-monitoring/18 px-3 py-1 text-[0.72rem] font-semibold text-[#8d5c25] ring-1 ring-inset ring-[#ebc789]/45">
+    <Badge className="inline-flex h-7 w-fit rounded-full border-0 bg-accent-monitoring/20 px-3 py-0 text-[0.72rem] font-semibold text-[#8d5c25] ring-1 ring-inset ring-[#ebc789]/45">
       {children}
     </Badge>
   );
@@ -658,25 +659,32 @@ export function StatusPill({ children }: { children: React.ReactNode }) {
 
 export function PetHeader({ pet }: { pet: PetSummary }) {
   const ageLabel = formatApproximateAgeLabel(pet.birthDate);
-  const detailChips = [
-    formatPetSpecies(pet.species),
-    pet.breed,
-    ageLabel,
-  ].filter(Boolean);
+  const detailChips = [formatPetSpecies(pet.species), pet.breed, ageLabel].filter(Boolean);
 
   return (
-    <Card className="gap-0 rounded-[1.6rem] border-border-soft bg-[linear-gradient(180deg,#fffdf9_0%,#f6efe3_100%)] px-4 py-4 shadow-[0_14px_30px_rgba(40,50,66,0.06)]">
-      <div className="flex items-center gap-3.5">
+    <Card className="gap-0 rounded-[1.4rem] border-[#dfd6c8] bg-[linear-gradient(180deg,#fffaf4_0%,#f7edde_100%)] px-3.5 py-3.5 shadow-[0_12px_24px_rgba(40,50,66,0.06)]">
+      <div className="flex items-start gap-3">
         <PetAvatar pet={pet} size="lg" />
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[1.45rem] leading-none font-bold tracking-tight text-text-primary min-[380px]:text-[1.6rem]">
+          <p className="truncate text-[0.66rem] font-semibold tracking-[0.2em] text-[#8a7762] uppercase">
+            Current pet
+          </p>
+          <h1 className="mt-1 truncate text-[1.18rem] leading-none font-bold tracking-tight text-text-primary min-[380px]:text-[1.3rem]">
             {pet.name}
           </h1>
-          <p className="mt-1 truncate text-[0.84rem] font-medium text-text-secondary">
+          <p className="mt-1 truncate text-[0.77rem] font-medium text-text-secondary">
             {detailChips.join(" • ")}
           </p>
-          <div className="mt-2">
-            <StatusPill>On Track</StatusPill>
+          <div className="mt-3 space-y-2">
+            <div className="rounded-[1rem] bg-[#fff7ed]/92 px-3 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.65)] ring-1 ring-inset ring-[#efd9b7]">
+              <p className="text-[1rem] leading-5 font-semibold tracking-tight text-[#3f3124]">
+                On track today
+              </p>
+              <p className="mt-0.5 text-[0.72rem] leading-4 text-[#7d6750]">
+                Dinner at 6:00 PM is the next key task.
+              </p>
+            </div>
+            <StatusPill>Stable routine</StatusPill>
           </div>
         </div>
       </div>
@@ -706,29 +714,38 @@ export function EmptyPetOverview({ pet }: { pet: PetSummary }) {
   );
 }
 
-export function SectionHeader({ title, eyebrow }: SectionHeaderProps) {
+export function SectionHeader({ title, eyebrow, actionLabel }: SectionHeaderProps) {
   return (
-    <div className="space-y-0.5 px-0.5">
-      {eyebrow ? (
-        <p className="text-[0.63rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
-          {eyebrow}
-        </p>
+    <div className="flex items-end justify-between gap-3 px-0.5">
+      <div className="space-y-0.5">
+        {eyebrow ? (
+          <p className="text-[0.61rem] font-semibold tracking-[0.18em] text-text-muted uppercase">
+            {eyebrow}
+          </p>
+        ) : null}
+        <h2 className="text-[0.98rem] font-semibold tracking-tight text-text-primary">{title}</h2>
+      </div>
+      {actionLabel ? (
+        <span className="text-[0.68rem] font-semibold text-[#6b7ea6]">{actionLabel}</span>
       ) : null}
-      <h2 className="text-[1.05rem] font-semibold tracking-tight text-text-primary">{title}</h2>
     </div>
   );
 }
 
 export function TaskCard({ icon, title, detail }: TaskCardProps) {
   return (
-    <Card className="gap-0 rounded-[1.15rem] border-border-soft bg-surface px-3.5 py-3 shadow-[0_8px_18px_rgba(42,52,68,0.04)]">
-      <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef3fb] text-[#5671a0]">
+    <Card className="gap-0 rounded-[1rem] border-border-soft bg-surface px-2.5 py-2.5 shadow-[0_8px_18px_rgba(42,52,68,0.035)]">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[0.9rem] bg-[#eef3fb] text-[#5671a0]">
           {icon}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-sm font-semibold text-text-primary">{title}</p>
-          <p className="mt-0.5 text-[0.72rem] font-medium text-text-secondary">{detail}</p>
+          <p className="truncate text-[0.82rem] leading-4 font-semibold text-text-primary">
+            {title}
+          </p>
+          <p className="mt-0.5 text-[0.68rem] leading-4 font-medium text-text-secondary">
+            {detail}
+          </p>
         </div>
       </div>
     </Card>
@@ -737,11 +754,11 @@ export function TaskCard({ icon, title, detail }: TaskCardProps) {
 
 export function FeedRow({ actor, action }: FeedRowProps) {
   return (
-    <Card className="flex-row items-center gap-3 rounded-[1.15rem] border-border-soft bg-surface px-3.5 py-3">
-      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eaf0f5] text-xs font-semibold text-[#5d6f86]">
+    <Card className="flex-row items-center gap-2.5 rounded-[1rem] border-border-soft bg-surface px-2.5 py-2.5 shadow-none">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#eaf0f5] text-[0.68rem] font-semibold text-[#5d6f86]">
         {getInitials(actor)}
       </div>
-      <p className="text-[0.9rem] leading-5 text-text-secondary">
+      <p className="text-[0.78rem] leading-[1.15rem] text-text-secondary">
         <span className="font-semibold text-text-primary">{actor}</span>{" "}
         {action}
       </p>
@@ -751,17 +768,14 @@ export function FeedRow({ actor, action }: FeedRowProps) {
 
 export function ConcernCard({ title }: ConcernCardProps) {
   return (
-    <Card className="gap-0 rounded-[1.25rem] border-[#ead9b8] bg-[linear-gradient(180deg,#fffaf0_0%,#fff7e8_100%)] px-3.5 py-3.5">
-      <div className="flex items-start gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent-warning/18 text-[#a06d17]">
-          <AlertIcon />
+    <Card className="gap-0 rounded-[1.05rem] border-[#ead9b8] bg-[linear-gradient(180deg,#fffaf0_0%,#fff5e2_100%)] px-3 py-2.5 shadow-none">
+      <div className="flex items-center gap-2.5">
+        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[0.9rem] bg-accent-warning/20 text-[#a06d17]">
+          <AlertIcon className="h-[1.05rem] w-[1.05rem]" />
         </div>
-        <div>
-          <p className="text-[0.63rem] font-semibold tracking-[0.18em] text-[#9f7a36] uppercase">
-            Active concern
-          </p>
-          <p className="mt-1.5 text-[0.95rem] font-semibold text-text-primary">{title}</p>
-          <p className="mt-1 text-[0.8rem] leading-5 text-text-secondary">
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-[0.86rem] font-semibold text-text-primary">{title}</p>
+          <p className="mt-0.5 text-[0.71rem] leading-4 text-text-secondary">
             Being monitored today.
           </p>
         </div>
@@ -779,16 +793,16 @@ export function QuickActionButton({
     <Button
       type="button"
       variant="outline"
-      className="flex h-auto items-start justify-center rounded-[1rem] border-border-soft/70 bg-white/78 px-2 py-2.5 text-center text-inherit shadow-none hover:bg-surface-soft focus-visible:ring-focus-ring focus-visible:ring-offset-surface"
+      className="flex h-auto items-start justify-center rounded-[1rem] border-border-soft/70 bg-white/78 px-1.5 py-2 text-center text-inherit shadow-none hover:bg-surface-soft focus-visible:ring-focus-ring focus-visible:ring-offset-surface"
       aria-label={`${label} placeholder`}
     >
-      <span className="flex flex-col items-center gap-2">
+      <span className="flex flex-col items-center gap-1.5">
         <span
-          className={`flex h-[2.9rem] w-[2.9rem] items-center justify-center rounded-full ${quickActionToneClass(tone)}`}
+          className={`flex h-10 w-10 items-center justify-center rounded-[0.95rem] ${quickActionToneClass(tone)}`}
         >
           {icon}
         </span>
-        <span className="max-w-[4.5rem] text-[0.72rem] leading-4 font-semibold text-text-primary">
+        <span className="max-w-[4.3rem] text-[0.69rem] leading-4 font-semibold text-text-primary">
           {label}
         </span>
       </span>
@@ -798,8 +812,8 @@ export function QuickActionButton({
 
 export function QuickActionsPanel() {
   return (
-    <Card className="gap-0 rounded-[1.25rem] border-border-soft bg-surface px-2.5 py-2.5 shadow-[0_10px_22px_rgba(42,52,68,0.04)]">
-      <div className="grid grid-cols-2 gap-2 min-[400px]:grid-cols-4">
+    <Card className="gap-0 rounded-[1.1rem] border-border-soft bg-surface px-2 py-2 shadow-[0_10px_22px_rgba(42,52,68,0.04)]">
+      <div className="grid grid-cols-4 gap-1.5">
         <QuickActionButton
           label="Voice"
           tone="blue"
