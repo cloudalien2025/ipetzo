@@ -29,9 +29,11 @@ function getReturnPath(formData: FormData): string {
 }
 
 export async function switchCurrentPetAction(
-  _previousState: SwitchCurrentPetFormState = initialState,
+  previousState: SwitchCurrentPetFormState = initialState,
   formData: FormData,
 ): Promise<SwitchCurrentPetFormState> {
+  void previousState;
+
   const petId = getTrimmedString(formData, "petId");
   const returnTo = getReturnPath(formData);
 

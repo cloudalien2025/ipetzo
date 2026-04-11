@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -54,11 +55,13 @@ export function PetCreateForm() {
         />
 
         {photoUrlPreview ? (
-          <div className="overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white">
-            <img
+          <div className="relative h-40 overflow-hidden rounded-[1.35rem] border border-slate-200 bg-white">
+            <Image
               src={photoUrlPreview}
               alt="Pet photo preview"
-              className="h-40 w-full object-cover"
+              fill
+              sizes="(max-width: 640px) 100vw, 32rem"
+              className="object-cover"
               onError={() => {
                 setPhotoUrlPreview("");
               }}
