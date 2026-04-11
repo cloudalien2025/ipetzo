@@ -94,9 +94,11 @@ function getWeightValue(formData: FormData): number | null {
 }
 
 export async function createPetAction(
-  _previousState: CreatePetFormState = initialState,
+  previousState: CreatePetFormState = initialState,
   formData: FormData,
 ): Promise<CreatePetFormState> {
+  void previousState;
+
   const name = getTrimmedString(formData, "name");
 
   if (!name) {

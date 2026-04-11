@@ -3,7 +3,6 @@ import {
   CapsuleIcon,
   ConcernCard,
   DropIcon,
-  FeedRow,
   PetHeader,
   QuickActionsPanel,
   SectionHeader,
@@ -11,6 +10,8 @@ import {
 } from "@/components/layout/app-shell-primitives";
 import { EmptyStateCard } from "@/components/shared/empty-state-card";
 import { getAuthenticatedPetContext } from "@/server/services/pets";
+import { getVillageActivityFeed } from "@/server/services/village-activity";
+import { Card } from "@/components/ui/card";
 
 const dueNowItems = [
   {
@@ -30,23 +31,9 @@ const dueNowItems = [
   },
 ] as const;
 
-const villageFeedItems = [
-  {
-    actor: "Michael",
-    action: "fed Buddy and Izzy at 8:30 AM",
-  },
-  {
-    actor: "Sarah",
-    action: "gave Apoquel at 9:00 AM",
-  },
-  {
-    actor: "Jake",
-    action: "noted itching after walk",
-  },
-] as const;
-
 export default async function AppHomePage() {
   const petContext = await getAuthenticatedPetContext();
+  const villageActivityFeed = await getVillageActivityFeed();
 
   if (!petContext.currentPet) {
     return (
@@ -83,16 +70,17 @@ export default async function AppHomePage() {
       </section>
 
       <section className="space-y-2">
-        <SectionHeader title="Village Feed" eyebrow="Recent care" actionLabel="Village" />
-        <div className="space-y-1.5">
-          {villageFeedItems.map((item) => (
-            <FeedRow
-              key={`${item.actor}-${item.action}`}
-              actor={item.actor}
-              action={item.action}
-            />
-          ))}
-        </div>
+        <SectionHeader title="Village" eyebrow="Shared care" />
+        <Card className="gap-1 rounded-[1rem] border-border-soft bg-surface px-3 py-3 shadow-none">
+          <p className="text-[0.8rem] font-semibold text-text-primary">
+            Village activity is not connected in this build.
+          </p>
+          <p className="text-[0.74rem] leading-[1.15rem] text-text-secondary">
+            {villageActivityFeed.status === "backend_unavailable"
+              ? `${petContext.currentPet.name} is scoped to pet records on this account until village storage, actor metadata, and timestamps exist in the backend.`
+              : "Add a pet before village activity can be scoped."}
+          </p>
+        </Card>
       </section>
 
       <section className="space-y-2">
